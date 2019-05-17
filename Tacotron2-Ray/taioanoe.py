@@ -1,11 +1,12 @@
 import argparse
-import os
 from multiprocessing import cpu_count
+import os
+from os.path import isdir
 
 from datasets import preprocessor
 from hparams import hparams
+from preprocess import preprocess
 from tqdm import tqdm
-from os.path import isdir
 
 
 def norm_data(args):
