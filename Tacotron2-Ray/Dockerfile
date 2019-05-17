@@ -1,3 +1,10 @@
+FROM i3thuan5/hapsing-giliau
+MAINTAINER i3thuan5
+RUN pip install --upgrade https://github.com/i3thuan5/tai5-uan5_gian5-gi2_hok8-bu7/archive/tacotron.zip
+RUN python manage.py 匯出Tacotron格式資料 台語 王秀容 /opt/giliau
+
+
+
 FROM tensorflow/tensorflow:latest-gpu-py3
 
 #RUN pip install --upgrade pip
