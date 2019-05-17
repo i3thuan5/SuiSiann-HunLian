@@ -58,7 +58,7 @@ def norm_data(args):
 def run_preprocess(args, hparams):
     input_folders = [os.path.join(args.base_dir, args.dataset)]
     if not isdir(input_folders[0]):
-        raise ValueError('Dataset  {} 有問題'.format(args.dataset))
+        raise ValueError('Dataset  {} 有問題: {}'.format(args.dataset, input_folders))
 
     output_folder = os.path.join(args.base_dir, args.output)
 

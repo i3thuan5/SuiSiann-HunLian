@@ -1,4 +1,4 @@
-FROM i3thuan5/hapsing-giliau
+FROM i3thuan5/hapsing-giliau AS giliau
 MAINTAINER i3thuan5
 RUN pip install --upgrade https://github.com/i3thuan5/tai5-uan5_gian5-gi2_hok8-bu7/archive/tacotron.zip
 RUN python manage.py 匯出Tacotron格式資料 台語 王秀容 /opt/giliau
@@ -19,6 +19,11 @@ RUN git clone -b i3thuan5_working https://github.com/a8568730/Tacotron-2.git
 WORKDIR Tacotron-2
 RUN ln -s ../LJSpeech-1.1 .
 RUN pip install -r requirements.txt
+
+COPY --from=giliau /opt/giliau/taioanoe Taioanoe
+
 COPY taioanoe.py .
 RUN python taioanoe.py
+RUN python train.py --model='Tacotron-2'
+
 
