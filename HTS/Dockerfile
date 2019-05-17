@@ -1,4 +1,4 @@
-FROM i3thuan5/hapsing-huanlian
+FROM i3thuan5/hapsing-giliau
 MAINTAINER i3thuan5
 
 RUN apt-get update -qq && \
