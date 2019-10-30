@@ -4,27 +4,52 @@
 #
 
 meta:
-    project: SuiSiann-WaveRNN
+  project: SuiSiann-WaveRNN
 
 mount=giliau_huetshut:
-    bind: ./giliau/
-    path: /giliau/
+  bind: ./giliau/
+  path: /giliau/
 
 mount=giliau:
-    bind: ./giliau/
-    path: /giliau/
-    read-only: true
+  bind: ./giliau/
+  path: /giliau/
+  read-only: true
+
+mount=tshamsoo:
+  bind: ./tshamsoo/
+  path: /tshamsoo/
+  read-only: true
 
 
 image=hapsing-giliau:
-    image: i3thuan5/hapsing-giliau
-    context: hapsing-giliau
+  image: i3thuan5/hapsing-giliau
+  context: hapsing-giliau
 
 job=huetshut-suisiann-giliau:
-    use: thapsing-giliau
-    sources: ./hapsing-giliau/Dockerfile
-    artifact: ./giliau/
-    mounts: [giliau_huetshut, ]
+  use: thapsing-giliau
+  sources: ./hapsing-giliau/Dockerfile
+  artifact: ./giliau/
+  mounts: [giliau_huetshut, ]
+
+image=hunlian-khuanking:
+  image: hunlian-khuanking
+  context: hunlian-khuanking
+
+job=preprocess:
+  use: hunlian-khuanking
+  command: |
+    bash -eux -c '
+      cp /tshamsoo/hparams.py .
+      cp /tshamsoo/preprocess.py .
+      python preprocess.py
+    '
+  sources: ./pian7sik4_gi2liau7/tw0102.json
+  artifact: ./kaldi_data/tw01/segments
+  mounts: [giliau_huetshut, tshamsoo, ]
+
+
+
+
 
 image=huejip-hokbu:
     image: huejip-hokbu-kehsik
