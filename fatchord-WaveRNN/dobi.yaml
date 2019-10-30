@@ -47,8 +47,32 @@ job=preprocess:
       cp /tshamsoo/preprocess.py .
       python preprocess.py --path /gilau/
     '
-  sources: ./pian7sik4_gi2liau7/tw0102.json
-  artifact: ./kaldi_data/tw01/segments
   mounts: [giliau_huetshut, tshamsoo, data, ]
 
+job=tacotron:
+  use: hunlian-khuanking
+  command: |
+    bash -eux -c '
+      cp /tshamsoo/hparams.py .
+      python train_tacotron.py
+    '
+  mounts: [tshamsoo, data, ]
+
+job=tacotron-gta:
+  use: hunlian-khuanking
+  command: |
+    bash -eux -c '
+      cp /tshamsoo/hparams.py .
+      python train_tacotron.py --force_gta
+    '
+  mounts: [tshamsoo, data, ]
+
+job=wavernn:
+  use: hunlian-khuanking
+  command: |
+    bash -eux -c '
+      cp /tshamsoo/hparams.py .
+      python train_wavernn.py --gta
+    '
+  mounts: [tshamsoo, data, ]
 
