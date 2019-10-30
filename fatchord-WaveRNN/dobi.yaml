@@ -30,7 +30,7 @@ image=hapsing-giliau:
   context: hapsing-giliau
 
 job=huetshut-suisiann-giliau:
-  use: thapsing-giliau
+  use: hapsing-giliau
   sources: ./hapsing-giliau/Dockerfile
   artifact: ./giliau/
   mounts: [giliau_huetshut, ]
