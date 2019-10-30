@@ -20,6 +20,10 @@ mount=tshamsoo:
   path: /tshamsoo/
   read-only: true
 
+mount=data:
+  bind: ./data/
+  path: /data/
+
 
 image=hapsing-giliau:
   image: i3thuan5/hapsing-giliau
@@ -41,11 +45,11 @@ job=preprocess:
     bash -eux -c '
       cp /tshamsoo/hparams.py .
       cp /tshamsoo/preprocess.py .
-      python preprocess.py
+      python preprocess.py --path /gilau/
     '
   sources: ./pian7sik4_gi2liau7/tw0102.json
   artifact: ./kaldi_data/tw01/segments
-  mounts: [giliau_huetshut, tshamsoo, ]
+  mounts: [giliau_huetshut, tshamsoo, data, ]
 
 
 
