@@ -17,8 +17,8 @@ RUN pip install -r requirements.txt
 
 COPY --from=giliau /opt/giliau/taioanoe Taioanoe
 
-COPY hparams.py taioanoe.py ./
-RUN python taioanoe.py
+COPY hparams.py preprocess.py ./
+RUN python preprocess.py
 RUN python train.py --model='Tacotron-2'
 
 
