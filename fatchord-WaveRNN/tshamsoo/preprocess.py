@@ -6,23 +6,41 @@ from multiprocessing import Pool, cpu_count
 from utils.paths import Paths
 import pickle
 import argparse
-from utils.text.recipes import ljspeech
 from utils.files import get_files
 from pathlib import Path
+from csv import DictReader
+from os.path import splitext
+from typing import Union
 
 
 # Helper functions for argument types
 def valid_n_workers(num):
     n = int(num)
     if n < 1:
-        raise argparse.ArgumentTypeError('%r must be an integer greater than 0' % num)
+        raise argparse.ArgumentTypeError(
+            '%r must be an integer greater than 0' % num)
     return n
 
-parser = argparse.ArgumentParser(description='Preprocessing for WaveRNN and Tacotron')
-parser.add_argument('--path', '-p', help='directly point to dataset path (overrides hparams.wav_path')
-parser.add_argument('--extension', '-e', metavar='EXT', default='.wav', help='file extension to search for in dataset folder')
-parser.add_argument('--num_workers', '-w', metavar='N', type=valid_n_workers, default=cpu_count()-1, help='The number of worker threads to use for preprocessing')
-parser.add_argument('--hp_file', metavar='FILE', default='hparams.py', help='The file to use for the hyperparameters')
+
+parser = argparse.ArgumentParser(
+    description='Preprocessing for WaveRNN and Tacotron')
+parser.add_argument(
+    '--path', '-p',
+    help='directly point to dataset path (overrides hparams.wav_path'
+)
+parser.add_argument(
+    '--extension', '-e', metavar='EXT', default='.wav',
+    help='file extension to search for in dataset folder'
+)
+parser.add_argument(
+    '--num_workers', '-w', metavar='N', type=valid_n_workers,
+    default=cpu_count() - 1,
+    help='The number of worker threads to use for preprocessing'
+)
+parser.add_argument(
+    '--hp_file', metavar='FILE', default='hparams.py',
+    help='The file to use for the hyperparameters'
+)
 args = parser.parse_args()
 
 hp.configure(args.hp_file)  # Load hparams from file
@@ -33,6 +51,22 @@ extension = args.extension
 path = args.path
 
 
+def suisiann(path: Union[str, Path]):
+    csv_file = get_files(path, extension='.csv')
+
+    assert len(csv_file) == 1
+
+    text_dict = {}
+
+    with open(csv_file[0], encoding='utf-8') as f:
+        for tsua in DictReader(f):
+            imtong = splitext(tsua['音檔'])[0]
+            lmj = tsua['羅馬字']
+            text_dict[imtong] = lmj
+
+    return text_dict
+
+
 def convert_file(path: Path):
     y = load_wav(path)
     peak = np.abs(y).max()
@@ -40,7 +74,8 @@ def convert_file(path: Path):
         y /= peak
     mel = melspectrogram(y)
     if hp.voc_mode == 'RAW':
-        quant = encode_mu_law(y, mu=2**hp.bits) if hp.mu_law else float_2_label(y, bits=hp.bits)
+        quant = encode_mu_law(
+            y, mu=2**hp.bits) if hp.mu_law else float_2_label(y, bits=hp.bits)
     elif hp.voc_mode == 'MOL':
         quant = float_2_label(y, bits=16)
 
@@ -50,8 +85,8 @@ def convert_file(path: Path):
 def process_wav(path: Path):
     wav_id = path.stem
     m, x = convert_file(path)
-    np.save(paths.mel/f'{wav_id}.npy', m, allow_pickle=False)
-    np.save(paths.quant/f'{wav_id}.npy', x, allow_pickle=False)
+    np.save(paths.mel / f'{wav_id}.npy', m, allow_pickle=False)
+    np.save(paths.quant / f'{wav_id}.npy', x, allow_pickle=False)
     return wav_id, m.shape[-1]
 
 
@@ -69,9 +104,9 @@ else:
 
     if not hp.ignore_tts:
 
-        text_dict = ljspeech(path)
+        text_dict = suisiann(path)
 
-        with open(paths.data/'text_dict.pkl', 'wb') as f:
+        with open(paths.data / 'text_dict.pkl', 'wb') as f:
             pickle.dump(text_dict, f)
 
     n_workers = max(1, args.num_workers)
@@ -93,7 +128,7 @@ else:
         message = f'{bar} {i}/{len(wav_files)} '
         stream(message)
 
-    with open(paths.data/'dataset.pkl', 'wb') as f:
+    with open(paths.data / 'dataset.pkl', 'wb') as f:
         pickle.dump(dataset, f)
 
     print('\n\nCompleted. Ready to run "python train_tacotron.py" or "python train_wavernn.py". \n')
