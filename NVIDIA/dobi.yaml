@@ -24,6 +24,12 @@ mount=data:
   bind: ./data/
   path: /data/
 
+image=tacotron-kehsik:
+  image: tacotron2-kehsik
+  context: tacotron2-kehsik
+
+job=tsuan-tacotron-kehsik:
+  use: tacotron2-khuanking
 
 image=tacotron2-khuanking:
   image: tacotron2-khuanking
