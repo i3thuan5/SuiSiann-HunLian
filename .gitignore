@@ -1,3 +1,11 @@
 .project
 .*swp
+metadata.csv
+.pydevproject
+SuiSiann-0.1.tar
+0.1*
+giliau
+data/
+.dobi/
+checkpoints/
 
