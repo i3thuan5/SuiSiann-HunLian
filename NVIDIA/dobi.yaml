@@ -1,0 +1,50 @@
+#
+# Build a minimal docker image for a static go binary.
+# See README.md for a full description.
+#
+
+meta:
+  project: SuiSiann-WaveRNN
+
+mount=giliau_huetshut:
+  bind: ./giliau/
+  path: /giliau/
+
+mount=giliau:
+  bind: ./giliau/
+  path: /giliau/
+  read-only: true
+
+mount=tshamsoo:
+  bind: ./tshamsoo/
+  path: /tshamsoo/
+  read-only: true
+
+mount=data:
+  bind: ./data/
+  path: /data/
+
+
+image=tacotron2-khuanking:
+  image: tacotron2-khuanking
+  context: tacotron2-khuanking
+
+#job=preprocess:
+#  use: hunlian-khuanking
+#  command: |
+#    bash -eux -c '
+#      cp /tshamsoo/hparams.py .
+#      cp /tshamsoo/preprocess.py .
+#      python preprocess.py --path /giliau/
+#    '
+#  mounts: [giliau_huetshut, tshamsoo, data, ]
+
+#job=tacotron:
+#  use: hunlian-khuanking
+#  command: |
+#    bash -eux -c '
+#      cp /tshamsoo/hparams.py .
+#      python train_tacotron.py
+#    '
+#  mounts: [tshamsoo, data, ]
+
