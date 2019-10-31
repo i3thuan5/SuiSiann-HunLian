@@ -15,8 +15,6 @@
 Tacotron 尾仔ê GTA ê留較短ê檔，所以ē-tàng整理出來予WaveRNN用
 ```
 ls data/gta/ | sed 's/.npy//g' | tee gta_u
-cat 0.1/sui-siann.csv | head -n 1 > sui-siann-gta.csv
-cat 0.1/sui-siann.csv | grep -f gta_u  | cat >> sui-siann-gta.csv
 find data/mel/ -type f | grep -v -f gta_u  | xargs rm 
 find data/quant/ -type f | grep -v -f gta_u  | xargs rm 
 find 0.1-22050-gta/ImTong/ -type f | grep -v -f gta_u  | xargs rm 
