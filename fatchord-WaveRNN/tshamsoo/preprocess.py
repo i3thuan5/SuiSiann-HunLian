@@ -9,7 +9,7 @@ import argparse
 from utils.files import get_files
 from pathlib import Path
 from csv import DictReader
-from os.path import splitext
+from os.path import splitext, basename
 from typing import Union
 
 
@@ -60,7 +60,7 @@ def suisiann(path: Union[str, Path]):
 
     with open(csv_file[0], encoding='utf-8') as f:
         for tsua in DictReader(f):
-            imtong = splitext(tsua['音檔'])[0]
+            imtong = splitext(basename(tsua['音檔']))[0]
             lmj = tsua['羅馬字']
             text_dict[imtong] = lmj
 
