@@ -113,6 +113,7 @@ else:
 
         with open(paths.data / 'text_dict.pkl', 'wb') as f:
             pickle.dump(text_dict, f)
+
     n_workers = max(1, args.num_workers)
 
     simple_table([
