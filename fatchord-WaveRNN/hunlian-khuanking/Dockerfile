@@ -7,5 +7,5 @@ RUN git clone https://github.com/fatchord/WaveRNN.git
 WORKDIR WaveRNN
 
 RUN pip install -r requirements.txt
-
+ENV LANG C.UTF-8
 

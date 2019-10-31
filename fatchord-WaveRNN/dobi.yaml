@@ -45,7 +45,7 @@ job=preprocess:
     bash -eux -c '
       cp /tshamsoo/hparams.py .
       cp /tshamsoo/preprocess.py .
-      python preprocess.py --path /gilau/
+      python preprocess.py --path /giliau/
     '
   mounts: [giliau_huetshut, tshamsoo, data, ]
 
