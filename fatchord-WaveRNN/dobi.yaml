@@ -1,0 +1,81 @@
+#
+# Build a minimal docker image for a static go binary.
+# See README.md for a full description.
+#
+
+meta:
+  project: SuiSiann-WaveRNN
+
+mount=giliau_huetshut:
+  bind: ./giliau/
+  path: /giliau/
+
+mount=giliau:
+  bind: ./giliau/
+  path: /giliau/
+  read-only: true
+
+mount=tshamsoo:
+  bind: ./tshamsoo/
+  path: /tshamsoo/
+  read-only: true
+
+mount=data:
+  bind: ./data/
+  path: /data/
+
+mount=checkpoints:
+  bind: ./checkpoints/
+  path: /WaveRNN/checkpoints/
+
+image=hapsing-giliau:
+  image: i3thuan5/hapsing-giliau
+  context: hapsing-giliau
+
+job=huetshut-suisiann-giliau:
+  use: hapsing-giliau
+  sources: ./hapsing-giliau/Dockerfile
+  artifact: ./giliau/
+  mounts: [giliau_huetshut, ]
+
+image=hunlian-khuanking:
+  image: hunlian-khuanking
+  context: hunlian-khuanking
+
+job=preprocess:
+  use: hunlian-khuanking
+  command: |
+    bash -eux -c '
+      cp /tshamsoo/hparams.py .
+      cp /tshamsoo/preprocess.py .
+      python preprocess.py --path /giliau/
+    '
+  mounts: [giliau_huetshut, tshamsoo, data, ]
+
+job=tacotron:
+  use: hunlian-khuanking
+  command: |
+    bash -eux -c '
+      cp /tshamsoo/hparams.py .
+      python train_tacotron.py
+    '
+  mounts: [tshamsoo, data, checkpoints, ]
+
+job=tacotron-gta:
+  use: hunlian-khuanking
+  command: |
+    bash -eux -c '
+      cp /tshamsoo/hparams.py .
+      python train_tacotron.py --force_gta
+    '
+  mounts: [tshamsoo, data, checkpoints, ]
+
+job=wavernn:
+  use: hunlian-khuanking
+  command: |
+    bash -eux -c '
+      cp /tshamsoo/hparams.py .
+      python train_wavernn.py --gta
+    '
+  mounts: [tshamsoo, data, checkpoints, ]
+
