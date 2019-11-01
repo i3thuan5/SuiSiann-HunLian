@@ -9,7 +9,7 @@ def main(csv_sootsai, boklok_sootsai):
     with open(csv_sootsai, encoding='utf-8') as f:
         for tsua in DictReader(f):
             imtong = join(tsitma, tsua['音檔'])
-            lmj = tsua['羅馬字']
+            lmj = tsua['羅馬字'].replace('\n', ' ')
             tsuan.append('|'.join([imtong, lmj]))
     with open(
         join(boklok_sootsai, 'suisiann_audio_text_train_filelist.txt'),
@@ -17,7 +17,7 @@ def main(csv_sootsai, boklok_sootsai):
     ) as tong:
         print('\n'.join(tsuan[:-600]), file=tong)
     with open(
-        join(boklok_sootsai, 'suisiann_audio_text_vat_filelist.txt'),
+        join(boklok_sootsai, 'suisiann_audio_text_val_filelist.txt'),
         'wt', encoding='utf-8'
     ) as tong:
         print('\n'.join(tsuan[-600:-500]), file=tong)
