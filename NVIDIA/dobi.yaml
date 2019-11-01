@@ -25,7 +25,7 @@ mount=tacotron2-data:
   path: /data/
 
 mount=waveglow-data:
-  bind: ./waveglow_data/
+  bind: ./waveglow-data/
   path: /checkpoints/
 
 image=tacotron2-kehsik:
