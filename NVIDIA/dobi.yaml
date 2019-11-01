@@ -36,16 +36,6 @@ image=tacotron2-khuanking:
   image: tacotron2-khuanking
   context: tacotron2-khuanking
 
-#job=preprocess:
-#  use: hunlian-khuanking
-#  command: |
-#    bash -eux -c '
-#      cp /tshamsoo/hparams.py .
-#      cp /tshamsoo/preprocess.py .
-#      python preprocess.py --path /giliau/
-#    '
-#  mounts: [giliau_huetshut, tshamsoo, data, ]
-
 job=tacotron2:
   use: tacotron2-khuanking
   command: |
@@ -53,5 +43,27 @@ job=tacotron2:
       cp /tshamsoo/hparams.py .
       python train.py  --output_directory=/data/ --log_directory=log
     '
-  mounts: [tshamsoo, data, ]
+  mounts: [tshamsoo, giliau, filelists, ]
+
+job=tsuan-waveglow-kehsik:
+  use: tacotron2-kehsik
+  command: |
+    bash -eux -c '
+      ls /giliau/ImTong/*.wav | tail -n+500 > waveglow_train_files.txt
+      ls /giliau/ImTong//*.wav | head -n500 > waveglow_test_files.txt
+    '
+  mounts: [giliau, filelists, ]
+
+image=waveglow-khuanking:
+  image: waveglow-khuanking
+  context: waveglow-khuanking
+
+job=waveglow:
+  use: waveglow-khuanking
+  command: |
+    bash -eux -c '
+      cp /tshamsoo/config.json .
+      python train.py -c config.json
+    '
+  mounts: [tshamsoo, giliau, filelists, ]
 
