@@ -21,11 +21,11 @@ mount=tshamsoo:
   read-only: true
 
 mount=tacotron2-data:
-  bind: ./data/
+  bind: ./tacotron2-data/
   path: /data/
 
-mount=waveglow-checkpoints:
-  bind: ./waveglow_checkpoints/
+mount=waveglow-data:
+  bind: ./waveglow_data/
   path: /checkpoints/
 
 image=tacotron2-kehsik:
@@ -44,10 +44,10 @@ job=tacotron2:
   use: tacotron2-khuanking
   command: |
     bash -eux -c '
-      cp /tshamsoo/hparams.py .
+      cp /tshamsoo/tacotron2_hparams.py hparams.py
       python train.py  --output_directory=/data/ --log_directory=log
     '
-  mounts: [tshamsoo, giliau, filelists, ]
+  mounts: [tshamsoo, giliau, filelists, tacotron2-data, ]
 
 job=tsuan-waveglow-kehsik:
   use: tacotron2-kehsik
@@ -69,5 +69,5 @@ job=waveglow:
       cp /tshamsoo/waveglow_config.json .
       python train.py -c waveglow_config.json
     '
-  mounts: [tshamsoo, giliau, filelists, waveglow-checkpoints, ]
+  mounts: [tshamsoo, giliau, filelists, waveglow-data, ]
 
