@@ -6,8 +6,13 @@
 meta:
   project: SuiSiann-NVIDIA
 
-mount=giliau:
-  bind: ./giliau/
+mount=tacotron2-giliau:
+  bind: ./tacotron2-giliau/
+  path: /giliau/
+  read-only: true
+
+mount=waveglow-giliau:
+  bind: ./waveglow-giliau/
   path: /giliau/
   read-only: true
 
@@ -34,7 +39,7 @@ image=tacotron2-kehsik:
 
 job=tsuan-tacotron2-kehsik:
   use: tacotron2-kehsik
-  mounts: [giliau, filelists, ]
+  mounts: [tacotron2-giliau, filelists, ]
 
 image=tacotron2-khuanking:
   image: tacotron2-khuanking
@@ -47,7 +52,7 @@ job=tacotron2:
       cp /tshamsoo/tacotron2_hparams.py hparams.py
       python train.py  --output_directory=/data/ --log_directory=log
     '
-  mounts: [tshamsoo, giliau, filelists, tacotron2-data, ]
+  mounts: [tshamsoo, tacotron2-giliau, filelists, tacotron2-data, ]
 
 job=tsuan-waveglow-kehsik:
   use: tacotron2-kehsik
@@ -56,7 +61,7 @@ job=tsuan-waveglow-kehsik:
       ls /giliau/ImTong/*.wav | tail -n+500 > /filelists/waveglow_train_files.txt
       ls /giliau/ImTong/*.wav | head -n500 > /filelists/waveglow_test_files.txt
     '
-  mounts: [giliau, filelists, ]
+  mounts: [waveglow-giliau, filelists, ]
 
 image=waveglow-khuanking:
   image: waveglow-khuanking
@@ -69,5 +74,5 @@ job=waveglow:
       cp /tshamsoo/waveglow_config.json .
       python train.py -c waveglow_config.json
     '
-  mounts: [tshamsoo, giliau, filelists, waveglow-data, ]
+  mounts: [tshamsoo, waveglow-giliau, filelists, waveglow-data, ]
 
