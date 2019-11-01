@@ -46,7 +46,7 @@ image=tacotron2-khuanking:
 #    '
 #  mounts: [giliau_huetshut, tshamsoo, data, ]
 
-job=tacotron:
+job=tacotron2:
   use: tacotron2-khuanking
   command: |
     bash -eux -c '
