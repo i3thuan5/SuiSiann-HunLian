@@ -12,5 +12,6 @@ RUN pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="-
 
 WORKDIR /workspace
 RUN git clone https://github.com/NVIDIA/waveglow.git
-RUN cd waveglow
-RUN git submodule init; git submodule update
+WORKDIR waveglow
+RUN git submodule init && git submodule update
+
