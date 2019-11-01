@@ -1,4 +1,4 @@
-from os.path import dirname, join
+from os.path import dirname, join, isfile
 from sys import argv
 from csv import DictReader
 
@@ -10,7 +10,8 @@ def main(csv_sootsai, boklok_sootsai):
         for tsua in DictReader(f):
             imtong = join(tsitma, tsua['音檔'])
             lmj = tsua['羅馬字'].replace('\n', ' ')
-            tsuan.append('|'.join([imtong, lmj]))
+            if isfile(imtong):
+                tsuan.append('|'.join([imtong, lmj]))
     with open(
         join(boklok_sootsai, 'suisiann_audio_text_train_filelist.txt'),
         'wt', encoding='utf-8'
