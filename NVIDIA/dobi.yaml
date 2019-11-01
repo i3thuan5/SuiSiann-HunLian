@@ -4,16 +4,16 @@
 #
 
 meta:
-  project: SuiSiann-WaveRNN
-
-mount=giliau_huetshut:
-  bind: ./giliau/
-  path: /giliau/
+  project: SuiSiann-NVIDIA
 
 mount=giliau:
   bind: ./giliau/
   path: /giliau/
   read-only: true
+
+mount=filelists:
+  bind: ./filelists/
+  path: /filelists/
 
 mount=tshamsoo:
   bind: ./tshamsoo/
@@ -24,12 +24,13 @@ mount=data:
   bind: ./data/
   path: /data/
 
-image=tacotron-kehsik:
+image=tacotron2-kehsik:
   image: tacotron2-kehsik
   context: tacotron2-kehsik
 
-job=tsuan-tacotron-kehsik:
-  use: tacotron2-khuanking
+job=tsuan-tacotron2-kehsik:
+  use: tacotron2-kehsik
+  mounts: [giliau, filelists, ]
 
 image=tacotron2-khuanking:
   image: tacotron2-khuanking
