@@ -51,18 +51,23 @@ extension = args.extension
 path = args.path
 
 
-def suisiann(path: Union[str, Path]):
+def suisiann(path: Union[str, Path], wav_files):
     csv_file = get_files(path, extension='.csv')
 
     assert len(csv_file) == 1
 
+    u_tihleh = set()
+    for sootsai in wav_files:
+        u_tihleh.add(basename(sootsai))
     text_dict = {}
 
     with open(csv_file[0], encoding='utf-8') as f:
         for tsua in DictReader(f):
-            imtong = splitext(basename(tsua['音檔']))[0]
-            lmj = tsua['羅馬字']
-            text_dict[imtong] = lmj
+            mia = basename(tsua['音檔'])
+            if mia in u_tihleh:
+                imtong = splitext(mia)[0]
+                lmj = tsua['羅馬字']
+                text_dict[imtong] = lmj
 
     return text_dict
 
@@ -104,7 +109,7 @@ else:
 
     if not hp.ignore_tts:
 
-        text_dict = suisiann(path)
+        text_dict = suisiann(path, wav_files)
 
         with open(paths.data / 'text_dict.pkl', 'wb') as f:
             pickle.dump(text_dict, f)
