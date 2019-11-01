@@ -20,9 +20,13 @@ mount=tshamsoo:
   path: /tshamsoo/
   read-only: true
 
-mount=data:
+mount=tacotron2-data:
   bind: ./data/
   path: /data/
+
+mount=waveglow-checkpoints:
+  bind: ./waveglow_checkpoints/
+  path: /checkpoints/
 
 image=tacotron2-kehsik:
   image: tacotron2-kehsik
@@ -62,8 +66,8 @@ job=waveglow:
   use: waveglow-khuanking
   command: |
     bash -eux -c '
-      cp /tshamsoo/config.json .
-      python train.py -c config.json
+      cp /tshamsoo/waveglow_config.json .
+      python train.py -c waveglow_config.json
     '
-  mounts: [tshamsoo, giliau, filelists, ]
+  mounts: [tshamsoo, giliau, filelists, waveglow-checkpoints, ]
 
