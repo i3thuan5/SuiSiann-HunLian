@@ -48,6 +48,8 @@ job=preprocess:
     bash -eux -c '
       cp /tshamsoo/hparams.py .
       cp /tshamsoo/preprocess.py .
+      cp /tshamsoo/text_init.py utils/text/__init__.py
+      cp /tshamsoo/symbols.py utils/text/symbols.py
       python preprocess.py --path /giliau/
     '
   mounts: [giliau_huetshut, tshamsoo, data, ]
@@ -57,6 +59,8 @@ job=tacotron:
   command: |
     bash -eux -c '
       cp /tshamsoo/hparams.py .
+      cp /tshamsoo/text_init.py utils/text/__init__.py
+      cp /tshamsoo/symbols.py utils/text/symbols.py
       python train_tacotron.py
     '
   mounts: [tshamsoo, data, checkpoints, ]
@@ -66,6 +70,8 @@ job=tacotron-gta:
   command: |
     bash -eux -c '
       cp /tshamsoo/hparams.py .
+      cp /tshamsoo/text_init.py utils/text/__init__.py
+      cp /tshamsoo/symbols.py utils/text/symbols.py
       python train_tacotron.py --force_gta
     '
   mounts: [tshamsoo, data, checkpoints, ]
@@ -75,6 +81,8 @@ job=wavernn:
   command: |
     bash -eux -c '
       cp /tshamsoo/hparams.py .
+      cp /tshamsoo/text_init.py utils/text/__init__.py
+      cp /tshamsoo/symbols.py utils/text/symbols.py
       python train_wavernn.py --gta
     '
   mounts: [tshamsoo, data, checkpoints, ]
