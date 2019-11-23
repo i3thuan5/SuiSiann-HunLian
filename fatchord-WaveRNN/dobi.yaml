@@ -56,6 +56,8 @@ job=preprocess:
 
 job=tacotron:
   use: hunlian-khuanking
+  env:
+  - CUDA_VISIBLE_DEVICES=0
   command: |
     bash -eux -c '
       cp /tshamsoo/hparams.py .
@@ -78,6 +80,8 @@ job=tacotron-gta:
 
 job=wavernn:
   use: hunlian-khuanking
+  env:
+  - CUDA_VISIBLE_DEVICES=0
   command: |
     bash -eux -c '
       cp /tshamsoo/hparams.py .
