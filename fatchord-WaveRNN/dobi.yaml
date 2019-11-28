@@ -108,6 +108,7 @@ job=huatsiann:
       sed -i "s/required=True, //g" gen_tacotron.py
       python gen_tacotron.py --input_text "tak8-ke1 tso3-hue2 lai5 tshit-tho5!" griffinlim
       python gen_tacotron.py --input_text "tak8-ke1 tso3-hue2 lai5 tshit-tho5!" wavernn
+      python gen_tacotron.py --input_text "tak8-ke1 tso3-hue2 lai5 tshit-tho5!" wavernn --unbatched
     '
   mounts: [tshamsoo, checkpoints, outputs]
 
