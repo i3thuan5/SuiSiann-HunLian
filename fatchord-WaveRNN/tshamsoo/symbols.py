@@ -10,8 +10,10 @@ _pad = '_'
 _punctuation = '!\'(),.:;? '
 _special = '-'
 _letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+_ipa = 'ŋəɛɨʔʰ̩ⁿ'
 
 _sooji = '0123456789'
 
 # Export all symbols:
-symbols = [_pad] + list(_special) + list(_punctuation) + list(_letters) + list(_sooji)
+symbols = [_pad] + list(_special) + list(_punctuation) + list(_letters) + list(_ipa) + list(_sooji)
+
