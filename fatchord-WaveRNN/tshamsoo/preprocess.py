@@ -11,6 +11,8 @@ from pathlib import Path
 from csv import DictReader
 from os.path import splitext, basename
 from typing import Union
+from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
+from 臺灣言語工具.音標系統.閩南語.臺灣閩南語羅馬字拼音 import 臺灣閩南語羅馬字拼音
 
 
 # Helper functions for argument types
@@ -67,7 +69,7 @@ def suisiann(path: Union[str, Path], wav_files):
             if mia in u_tihleh:
                 imtong = splitext(mia)[0]
                 lmj = tsua['羅馬字']
-                text_dict[imtong] = lmj
+                text_dict[imtong] = 拆文分析器.建立句物件(lmj).轉音(臺灣閩南語羅馬字拼音).看語句()
 
     return text_dict
 
