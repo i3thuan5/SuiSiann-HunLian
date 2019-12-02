@@ -1,0 +1,78 @@
+#
+# Build a minimal docker image for a static go binary.
+# See README.md for a full description.
+#
+
+meta:
+  project: SuiSiann-NVIDIA
+
+mount=tacotron2-giliau:
+  bind: ./tacotron2-giliau/
+  path: /giliau/
+  read-only: true
+
+mount=waveglow-giliau:
+  bind: ./waveglow-giliau/
+  path: /giliau/
+  read-only: true
+
+mount=filelists:
+  bind: ./filelists/
+  path: /filelists/
+
+mount=tshamsoo:
+  bind: ./tshamsoo/
+  path: /tshamsoo/
+  read-only: true
+
+mount=tacotron2-data:
+  bind: ./tacotron2-data/
+  path: /data/
+
+mount=waveglow-data:
+  bind: ./waveglow-data/
+  path: /checkpoints/
+
+image=tacotron2-kehsik:
+  image: tacotron2-kehsik
+  context: tacotron2-kehsik
+
+job=tsuan-tacotron2-kehsik:
+  use: tacotron2-kehsik
+  mounts: [tacotron2-giliau, filelists, ]
+
+image=tacotron2-khuanking:
+  image: tacotron2-khuanking
+  context: tacotron2-khuanking
+
+job=tacotron2:
+  use: tacotron2-khuanking
+  command: |
+    bash -eux -c '
+      cp /tshamsoo/tacotron2_hparams.py hparams.py
+      python train.py  --output_directory=/data/ --log_directory=log
+    '
+  mounts: [tshamsoo, tacotron2-giliau, filelists, tacotron2-data, ]
+
+job=tsuan-waveglow-kehsik:
+  use: tacotron2-kehsik
+  command: |
+    bash -eux -c '
+      ls /giliau/ImTong/*.wav | tail -n+500 > /filelists/waveglow_train_files.txt
+      ls /giliau/ImTong/*.wav | head -n500 > /filelists/waveglow_test_files.txt
+    '
+  mounts: [waveglow-giliau, filelists, ]
+
+image=waveglow-khuanking:
+  image: waveglow-khuanking
+  context: waveglow-khuanking
+
+job=waveglow:
+  use: waveglow-khuanking
+  command: |
+    bash -eux -c '
+      cp /tshamsoo/waveglow_config.json .
+      python train.py -c waveglow_config.json
+    '
+  mounts: [tshamsoo, waveglow-giliau, filelists, waveglow-data, ]
+
