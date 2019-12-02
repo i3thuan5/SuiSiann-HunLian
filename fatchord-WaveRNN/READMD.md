@@ -3,9 +3,18 @@
 
 ## 需要
 - dobi
+- sox
 
 ## 步
-1. 先掠 [SuiSiann-Dataset](https://suisiann-dataset.ithuan.tw/)
+1. 先掠 [SuiSiann-Dataset](https://suisiann-dataset.ithuan.tw/)，轉做對應頻率
+```
+export PANPUN=0.2
+mkdir -p tsiamsi-${PANPUN}/ImTong/
+find ${PANPUN} -name '*wav' -exec sox {} -b 16 -c 1 -r 16k tsiamsi-{} \;
+mv tsiamsi-${PANPUN} ${PANPUN}-22050
+cp ${PANPUN}/*csv ${PANPUN}-22050
+ln -s ${PANPUN}-22050 giliau
+```
 2. `dobi preprocess`
 3. `dobi tacotron`
 4. `dobi tacotron-gta`

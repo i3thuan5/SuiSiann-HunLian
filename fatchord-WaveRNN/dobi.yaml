@@ -73,6 +73,8 @@ job=tacotron:
 
 job=tacotron-gta:
   use: hunlian-khuanking
+  env:
+  - CUDA_VISIBLE_DEVICES=0
   command: |
     bash -eux -c '
       cp /tshamsoo/hparams.py .
