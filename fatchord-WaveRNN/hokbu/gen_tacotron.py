@@ -11,34 +11,14 @@ from utils.dsp import reconstruct_waveform, save_wav
 import numpy as np
 
 if __name__ == "__main__":
+    class Tshamsoo():
+        force_cpu = False
+        input_text = 'sss'
+        hp_file = 'hparams.py'
+        vocoder = 'wavernn'
+        batched = True
 
-    # Parse Arguments
-    parser = argparse.ArgumentParser(description='TTS Generator')
-    parser.add_argument('--input_text', '-i', type=str, help='[string] Type in something here and TTS will generate it!')
-    parser.add_argument('--tts_weights', type=str, help='[string/path] Load in different Tacotron weights')
-    parser.add_argument('--save_attention', '-a', dest='save_attn', action='store_true', help='Save Attention Plots')
-    parser.add_argument('--force_cpu', '-c', action='store_true', help='Forces CPU-only training, even when in CUDA capable environment')
-    parser.add_argument('--hp_file', metavar='FILE', default='hparams.py', help='The file to use for the hyperparameters')
-
-    parser.set_defaults(input_text=None)
-    parser.set_defaults(weights_path=None)
-
-    # name of subcommand goes to args.vocoder
-    subparsers = parser.add_subparsers(required=True, dest='vocoder')
-
-    wr_parser = subparsers.add_parser('wavernn', aliases=['wr'])
-    wr_parser.add_argument('--batched', '-b', dest='batched', action='store_true', help='Fast Batched Generation')
-    wr_parser.add_argument('--unbatched', '-u', dest='batched', action='store_false', help='Slow Unbatched Generation')
-    wr_parser.add_argument('--overlap', '-o', type=int, help='[int] number of crossover samples')
-    wr_parser.add_argument('--target', '-t', type=int, help='[int] number of samples in each batch index')
-    wr_parser.add_argument('--voc_weights', type=str, help='[string/path] Load in different WaveRNN weights')
-    wr_parser.set_defaults(batched=None)
-
-    gl_parser = subparsers.add_parser('griffinlim', aliases=['gl'])
-    gl_parser.add_argument('--iters', type=int, default=32, help='[int] number of griffinlim iterations')
-
-    args = parser.parse_args()
-
+    args = Tshamsoo()
     if args.vocoder in ['griffinlim', 'gl']:
         args.vocoder = 'griffinlim'
     elif args.vocoder in ['wavernn', 'wr']:
