@@ -4,7 +4,7 @@
 #
 
 meta:
-  project: SuiSiann-WaveRNN
+  project: SuiSiann-WaveRNN-HokBu
 
 mount=giliau_huetshut:
   bind: ./giliau/
@@ -126,17 +126,7 @@ job=quick:
     '
   mounts: [tshamsoo, checkpoints, outputs]
 
-job=hokbu:
-  use: hunlian-khuanking
-  env:
-  - CUDA_VISIBLE_DEVICES=1
-  command: |
-    bash -eux -c '
-      cp /tshamsoo/hparams.py .
-      cp /tshamsoo/text_init.py utils/text/__init__.py
-      cp /tshamsoo/symbols.py utils/text/symbols.py
-      pip install flask gunicorn
-      gunicorn -b 0.0.0.0:5000 --log-level debug gen_gen_tacotron:app
-    '
-  mounts: [tshamsoo, checkpoints, ]
+image=hokbu-khuanking:
+  image: suisiann-wavernn
+  context: .
 
