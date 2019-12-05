@@ -13,9 +13,11 @@ RUN pip install --upgrade librosa
 RUN git pull # 20191125
 
 RUN pip install flask gunicorn
-COPY tshamsoo/hparams.py /.
+COPY tshamsoo/hparams.py .
 COPY tshamsoo/text_init.py utils/text/__init__.py
 COPY tshamsoo/symbols.py utils/text/symbols.py
+COPY checkpoints/suisiann_lsa_smooth_attention.tacotron/latest* checkpoints/suisiann_lsa_smooth_attention.tacotron/
+COPY checkpoints/suisiann_mol.wavernn/latest* checkpoints/suisiann_mol.wavernn/
 COPY hokbu-khuanking/gen_tacotron.py suisiann.py
 CMD gunicorn -b 0.0.0.0:5000 --log-level debug suisiann:app
 

@@ -16,6 +16,12 @@ def thak():
         hp_file = 'hparams.py'
         vocoder = 'wavernn'
         batched = True
+        target = None
+        overlap = None
+        tts_weights = None
+        save_attn = False
+        voc_weights = None
+
 
     args = Tshamsoo()
     if args.vocoder in ['griffinlim', 'gl']:
@@ -101,7 +107,7 @@ app = Flask(__name__)
 @app.route("/", methods=('POST',))
 def hapsing():
     taibun = request.form['taibun']
-    sootsai = 'i-thuan.wav'
+    sootsai = '/kiatko/i-thuan.wav'
     tsau(taibun, sootsai)
     return sootsai
 
