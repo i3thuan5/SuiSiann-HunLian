@@ -13,7 +13,6 @@ import numpy as np
 if __name__ == "__main__":
     class Tshamsoo():
         force_cpu = False
-        input_text = 'sss'
         hp_file = 'hparams.py'
         vocoder = 'wavernn'
         batched = True
@@ -40,7 +39,6 @@ if __name__ == "__main__":
         target = args.target
         overlap = args.overlap
 
-    input_text = args.input_text
     tts_weights = args.tts_weights
     save_attn = args.save_attn
 
@@ -91,6 +89,7 @@ if __name__ == "__main__":
     tts_load_path = tts_weights if tts_weights else paths.tts_latest_weights
     tts_model.load(tts_load_path)
 
+def tsau(input_text, save_path):
     if input_text:
         inputs = [text_to_sequence(input_text.strip(), hp.tts_cleaner_names)]
     else:
@@ -130,11 +129,6 @@ if __name__ == "__main__":
             v_type = 'wavernn_batched'
         else:
             v_type = 'wavernn_unbatched'
-
-        if input_text:
-            save_path = paths.tts_output/f'__input_{input_text[:10]}_{v_type}_{tts_k}k.wav'
-        else:
-            save_path = paths.tts_output/f'{i}_{v_type}_{tts_k}k.wav'
 
         if save_attn: save_attention(attention, save_path)
 
