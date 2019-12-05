@@ -89,6 +89,18 @@ if __name__ == "__main__":
     tts_load_path = tts_weights if tts_weights else paths.tts_latest_weights
     tts_model.load(tts_load_path)
 
+from flask import Flask, escape, request
+
+app = Flask(__name__)
+
+
+@app.route("/", methods=('POST',))
+def hapsing():
+    taibun = request.form['taibun']
+    sootsai = 'i-thuan.wav'
+    tsau(taibun, sootsai)
+    return sootsai
+
 def tsau(input_text, save_path):
     if input_text:
         inputs = [text_to_sequence(input_text.strip(), hp.tts_cleaner_names)]
