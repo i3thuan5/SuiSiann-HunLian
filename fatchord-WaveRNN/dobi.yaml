@@ -108,9 +108,9 @@ job=huatsiann:
       cp /tshamsoo/text_init.py utils/text/__init__.py
       cp /tshamsoo/symbols.py utils/text/symbols.py
       sed -i "s/required=True, //g" gen_tacotron.py
-      python gen_tacotron.py --input_text "tak8-ke1 tso3-hue2 lai5 tshit-tho5!" griffinlim
-      python gen_tacotron.py --input_text "tak8-ke1 tso3-hue2 lai5 tshit-tho5!" wavernn
-      python gen_tacotron.py --input_text "tak8-ke1 tso3-hue2 lai5 tshit-tho5!" wavernn --unbatched
+      time python gen_tacotron.py -c --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" griffinlim
+      time python gen_tacotron.py -c --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" wavernn
+      time python gen_tacotron.py -c --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" wavernn --unbatched
     '
   mounts: [tshamsoo, checkpoints, outputs, ]
 
