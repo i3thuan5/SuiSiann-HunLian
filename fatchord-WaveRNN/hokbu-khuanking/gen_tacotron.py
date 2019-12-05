@@ -10,7 +10,7 @@ from utils.display import save_attention, simple_table
 from utils.dsp import reconstruct_waveform, save_wav
 import numpy as np
 
-if __name__ == "__main__":
+def thak():
     class Tshamsoo():
         force_cpu = False
         hp_file = 'hparams.py'
@@ -88,6 +88,10 @@ if __name__ == "__main__":
 
     tts_load_path = tts_weights if tts_weights else paths.tts_latest_weights
     tts_model.load(tts_load_path)
+    return args, voc_model, tts_model, batched, target, overlap, save_attn
+
+
+args, voc_model, tts_model, batched, target, overlap, save_attn = thak()
 
 from flask import Flask, escape, request
 
