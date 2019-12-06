@@ -45,6 +45,7 @@ from urllib.parse import urlencode
 taiBun='tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !'
 參數 = urlencode({
     'taibun': taiBun,
+    'sootsai': 'taiBun/tshi.wav',
 })
 headers = {
     "Content-type": "application/x-www-form-urlencoded",

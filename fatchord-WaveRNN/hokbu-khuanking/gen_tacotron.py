@@ -100,6 +100,7 @@ def thak():
 args, voc_model, tts_model, batched, target, overlap, save_attn = thak()
 
 from flask import Flask, escape, request
+from os.path import join
 
 app = Flask(__name__)
 
@@ -107,8 +108,9 @@ app = Flask(__name__)
 @app.route("/", methods=('POST',))
 def hapsing():
     taibun = request.form['taibun']
-    sootsai = '/kiatko/i-thuan.wav'
-    tsau(taibun, sootsai)
+    sootsai = request.form['sootsai']
+    imtong_sootsai = join('/kiatko', sootsai)
+    tsau(taibun, imtong_sootsai)
     return sootsai
 
 def tsau(input_text, save_path):
