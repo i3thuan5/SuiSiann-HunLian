@@ -7,7 +7,7 @@ data_path = '/data/'
 
 # model ids are separate - that way you can use a new tts with an old wavernn and vice versa
 # NB: expect undefined behaviour if models were trained on different DSP settings
-voc_model_id = 'suisiann_mol'
+voc_model_id = 'suisiann_raw'
 tts_model_id = 'suisiann_lsa_smooth_attention'
 
 # set this to True if you are only interested in WaveRNN
