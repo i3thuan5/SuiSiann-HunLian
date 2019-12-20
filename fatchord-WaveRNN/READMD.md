@@ -51,7 +51,7 @@ headers = {
     "Content-type": "application/x-www-form-urlencoded",
     "Accept": "text/plain"
 }
-it_conn = HTTPConnection('192.168.33.20', port=5000)
+it_conn = HTTPConnection('hapsing', port=5000)
 it_conn.request("POST", '/', 參數, headers)
 it_conn.getresponse().read()
 ```
