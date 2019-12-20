@@ -33,7 +33,10 @@ find 0.1-22050-gta/ImTong/ -type f | grep -v -f gta_u  | xargs rm
 #### Pau--khi-lai
 ```
 dobi hokbu-khuanking
+# GPU
 docker run --rm -ti -e CUDA_VISIBLE_DEVICES=1 -v `pwd`/kiatko:/kiatko -p 5000:5000 suisiann-wavernn:SuiSiann-WaveRNN-HokBu-fafoy
+# CPU
+docker run --rm -ti -e FORCE_CPU=True -v `pwd`/kiatko:/kiatko -p 5000:5000 suisiann-wavernn:SuiSiann-WaveRNN-HokBu-fafoy
 ```
 
 ##### Tshi
