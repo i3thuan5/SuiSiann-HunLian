@@ -1,24 +1,24 @@
-FROM i3thuan5/hapsing-giliau AS giliau
-MAINTAINER i3thuan5
-RUN pip install --upgrade https://github.com/i3thuan5/tai5-uan5_gian5-gi2_hok8-bu7/archive/Tacotron%E8%8E%AB%E6%8F%9B%E9%80%9D.zip
-RUN python manage.py 匯出Tacotron格式資料 台語 王秀容 /opt/giliau
-
-
-
 FROM pytorch/pytorch:1.3-cuda10.1-cudnn7-runtime
 
 RUN apt-get update && \
-  apt-get install -y libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg libav-tools wget git vim
+  apt-get install -y libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg libav-tools git vim-tiny
 
-RUN git clone https://github.com/fatchord/WaveRNN.git
+RUN git clone https://github.com/fatchord/WaveRNN.git /WaveRNN
 WORKDIR /WaveRNN
 
+ENV LANG C.UTF-8
 RUN pip install -r requirements.txt
+RUN pip install https://github.com/i3thuan5/tai5-uan5_gian5-gi2_kang1-ku7/archive/pian-tiau.zip
+RUN pip install --upgrade librosa
+RUN git pull # 20191125
 
-COPY --from=giliau /opt/giliau/taioanoe Taioanoe
-
-COPY hparams.py preprocess.py ./
-RUN python preprocess.py
-RUN python train.py --model='Tacotron-2'
+RUN pip install flask gunicorn
+COPY tshamsoo/hparams.py .
+COPY tshamsoo/text_init.py utils/text/__init__.py
+COPY tshamsoo/symbols.py utils/text/symbols.py
+COPY checkpoints/suisiann_lsa_smooth_attention.tacotron/latest* checkpoints/suisiann_lsa_smooth_attention.tacotron/
+COPY checkpoints/suisiann_raw.wavernn/latest* checkpoints/suisiann_raw.wavernn/
+COPY hokbu-khuanking/gen_tacotron.py suisiann.py
+CMD gunicorn -b 0.0.0.0:5000 --log-level debug suisiann:app
 
 

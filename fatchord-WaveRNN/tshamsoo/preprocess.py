@@ -1,18 +1,23 @@
+import argparse
+from csv import DictReader
 import glob
+from multiprocessing import Pool, cpu_count
+from os.path import splitext, basename
+from pathlib import Path
+import pickle
+from typing import Union
+
+from utils import hparams as hp
 from utils.display import *
 from utils.dsp import *
-from utils import hparams as hp
-from multiprocessing import Pool, cpu_count
-from utils.paths import Paths
-import pickle
-import argparse
 from utils.files import get_files
-from pathlib import Path
-from csv import DictReader
-from os.path import splitext, basename
-from typing import Union
+from utils.paths import Paths
+
+
 from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
 from 臺灣言語工具.音標系統.閩南語.臺灣閩南語羅馬字拼音 import 臺灣閩南語羅馬字拼音
+from 臺灣言語工具.語音合成.閩南語音韻規則 import 閩南語音韻規則
+from 臺灣言語工具.語音合成 import 台灣話口語講法
 
 
 # Helper functions for argument types
@@ -68,8 +73,11 @@ def suisiann(path: Union[str, Path], wav_files):
             mia = basename(tsua['音檔'])
             if mia in u_tihleh:
                 imtong = splitext(mia)[0]
+                hj = tsua['漢字']
                 lmj = tsua['羅馬字']
-                text_dict[imtong] = 拆文分析器.建立句物件(lmj).轉音(臺灣閩南語羅馬字拼音).看語句()
+                text_dict[imtong] = 台灣話口語講法(
+                    拆文分析器.建立句物件(hj, lmj)
+                )
 
     return text_dict
 

@@ -28,3 +28,30 @@ find data/mel/ -type f | grep -v -f gta_u  | xargs rm
 find data/quant/ -type f | grep -v -f gta_u  | xargs rm 
 find 0.1-22050-gta/ImTong/ -type f | grep -v -f gta_u  | xargs rm 
 ```
+
+
+#### Pau--khi-lai
+```
+dobi hokbu-khuanking
+docker run --rm -ti -e CUDA_VISIBLE_DEVICES=1 -v `pwd`/kiatko:/kiatko -p 5000:5000 suisiann-wavernn:SuiSiann-WaveRNN-HokBu-fafoy
+```
+
+##### Tshi
+Python
+```python
+from http.client import HTTPConnection
+from urllib.parse import urlencode
+
+taiBun='tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !'
+參數 = urlencode({
+    'taibun': taiBun,
+    'sootsai': 'taiBun/tshi.wav',
+})
+headers = {
+    "Content-type": "application/x-www-form-urlencoded",
+    "Accept": "text/plain"
+}
+it_conn = HTTPConnection('hapsing', port=5000)
+it_conn.request("POST", '/', 參數, headers)
+it_conn.getresponse().read()
+```

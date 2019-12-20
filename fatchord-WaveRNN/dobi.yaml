@@ -4,14 +4,14 @@
 #
 
 meta:
-  project: SuiSiann-WaveRNN
+  project: SuiSiann-WaveRNN-0.2
 
 mount=giliau_huetshut:
   bind: ./giliau/
   path: /giliau/
 
 mount=giliau:
-  bind: ./giliau/
+  bind: ./giliau/liankiat/
   path: /giliau/
   read-only: true
 
@@ -32,15 +32,27 @@ mount=checkpoints:
   bind: ./checkpoints/
   path: /WaveRNN/checkpoints/
 
-image=hapsing-giliau:
-  image: i3thuan5/hapsing-giliau
-  context: hapsing-giliau
+image=ubuntu:
+  image: ubuntu
+  tags: ['18.04']
+  pull: once
 
-job=huetshut-suisiann-giliau:
-  use: hapsing-giliau
-  sources: ./hapsing-giliau/Dockerfile
-  artifact: ./giliau/
-  mounts: [giliau_huetshut, ]
+job=suisiann-giliau:
+  use: ubuntu
+  command: |
+    bash -eux -c '
+      export PANPUN=0.2
+      apt-get update
+      apt-get install -y sox
+      rm -rf tsiamsi-${PANPUN} ${PANPUN}-22050 liankiat
+      mkdir -p tsiamsi-${PANPUN}/ImTong/
+      find ${PANPUN} -name "*wav" -exec sox {} -b 16 -c 1 -r 16k tsiamsi-{} \;
+      mv tsiamsi-${PANPUN} ${PANPUN}-22050
+      cp ${PANPUN}/*csv ${PANPUN}-22050
+      ln -s ${PANPUN}-22050 liankiat
+    '
+  mounts: [giliau_huetshut, tshamsoo, data, ]
+  working-dir: /giliau
 
 image=hunlian-khuanking:
   image: hunlian-khuanking
@@ -56,7 +68,7 @@ job=preprocess:
       cp /tshamsoo/symbols.py utils/text/symbols.py
       python preprocess.py --path /giliau/
     '
-  mounts: [giliau_huetshut, tshamsoo, data, ]
+  mounts: [giliau, tshamsoo, data, ]
 
 job=tacotron:
   use: hunlian-khuanking
@@ -108,9 +120,9 @@ job=huatsiann:
       cp /tshamsoo/text_init.py utils/text/__init__.py
       cp /tshamsoo/symbols.py utils/text/symbols.py
       sed -i "s/required=True, //g" gen_tacotron.py
-      python gen_tacotron.py --input_text "tak8-ke1 tso3-hue2 lai5 tshit-tho5!" griffinlim
-      python gen_tacotron.py --input_text "tak8-ke1 tso3-hue2 lai5 tshit-tho5!" wavernn
-      python gen_tacotron.py --input_text "tak8-ke1 tso3-hue2 lai5 tshit-tho5!" wavernn --unbatched
+      time python gen_tacotron.py -c --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" griffinlim
+      time python gen_tacotron.py -c --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" wavernn
+      time python gen_tacotron.py -c --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" wavernn --unbatched
     '
   mounts: [tshamsoo, checkpoints, outputs, ]
 
@@ -125,4 +137,8 @@ job=quick:
       mv quick_start model_outputs
     '
   mounts: [tshamsoo, checkpoints, outputs]
+
+image=hokbu-khuanking:
+  image: suisiann-wavernn
+  context: .
 
