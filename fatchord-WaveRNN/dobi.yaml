@@ -115,7 +115,7 @@ job=preprocess-wavernn-tsau:
     bash -eux -c '
       cp /tshamsoo/hparams.py .
       cp /tshamsoo/preprocess-wavernn.py .
-      python preprocess-wavernn.py --path /data/
+      python preprocess-wavernn.py --path /data/gta/
     '
   mounts: [tshamsoo, data, ]
 
@@ -128,6 +128,7 @@ job=wavernn:
       cp /tshamsoo/hparams.py .
       cp /tshamsoo/text_init.py utils/text/__init__.py
       cp /tshamsoo/symbols.py utils/text/symbols.py
+      sed -i "s/dataset.pkl/dataset_wavernn.pkl/g" utils/dataset.py
       python train_wavernn.py --gta
     '
   mounts: [tshamsoo, data, checkpoints, outputs, ]

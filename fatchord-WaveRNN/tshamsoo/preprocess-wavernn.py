@@ -53,13 +53,13 @@ else:
     if not hp.ignore_tts:
         u_tihleh = set()
         for sootsai in wav_files:
-            u_tihleh.add(basename(sootsai))
+            u_tihleh.add(splitext(basename(sootsai))[0])
 
-        text_dict_wavernn = {}
-        with open(paths.data / 'text_dict.pkl', 'rb') as f:
-            for k, v in pickle.load(f).items():
-                if k in u_tihleh:
-                    text_dict_wavernn[k] = v
+        dataset_wavernn = []
+        with open(paths.data / 'dataset.pkl', 'rb') as f:
+            for item_id, length in pickle.load(f):
+                if item_id in u_tihleh:
+                    dataset_wavernn.append((item_id, length))
 
-        with open(paths.data / 'text_dict_wavernn.pkl', 'wb') as f:
-            pickle.dump(text_dict_wavernn, f)
+        with open(paths.data / 'dataset_wavernn.pkl', 'wb') as f:
+            pickle.dump(dataset_wavernn, f)
