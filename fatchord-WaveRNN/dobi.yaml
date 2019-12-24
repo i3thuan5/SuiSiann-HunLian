@@ -16,7 +16,6 @@ mount=punte_giliau:
 mount=giliau:
   bind: ./{env.PANPUN}-22050/
   path: /giliau/
-  read-only: true
 
 mount=tshamsoo:
   bind: ./tshamsoo/
@@ -48,6 +47,7 @@ job=suisiann-giliau-pianma:
     bash -eux -c '
       apt-get update
       apt-get install -y sox
+      find . -type d -exec mkdir -p /giliau/{} \;
       find . -name "*wav" -exec sox {} -b 16 -c 1 -r 16k /giliau/{} \;
     '
   mounts: [punte_giliau, giliau, tshamsoo, data, ]
