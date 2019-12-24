@@ -104,6 +104,21 @@ job=tacotron-gta:
     '
   mounts: [tshamsoo, data, checkpoints, ]
 
+alias=preprocess-wavernn:
+  tasks: [siatting, preprocess-wavernn-tsau, ]
+
+job=preprocess-wavernn-tsau:
+  use: hunlian-khuanking
+  env:
+  - PANPUN={env.PANPUN}
+  command: |
+    bash -eux -c '
+      cp /tshamsoo/hparams.py .
+      cp /tshamsoo/preprocess-wavernn.py .
+      python preprocess-wavernn.py --path /data/
+    '
+  mounts: [tshamsoo, data, ]
+
 job=wavernn:
   use: hunlian-khuanking
   env:

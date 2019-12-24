@@ -57,7 +57,7 @@ else:
 
         text_dict_wavernn = {}
         with open(paths.data / 'text_dict.pkl', 'rb') as f:
-            for k, v in pickle.dump(f).items():
+            for k, v in pickle.load(f).items():
                 if k in u_tihleh:
                     text_dict_wavernn[k] = v
 
