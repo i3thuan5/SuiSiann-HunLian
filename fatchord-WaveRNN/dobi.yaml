@@ -9,12 +9,12 @@ meta:
 env=siatting:
   variables: [PANPUN=0.2]
 
-mount=giliau_huetshut:
-  bind: ./giliau/
-  path: /giliau/
+mount=punte_giliau:
+  bind: ./{env.PANPUN}
+  path: /punte_giliau/
 
 mount=giliau:
-  bind: ./giliau/liankiat/
+  bind: ./{env.PANPUN}-22050/
   path: /giliau/
   read-only: true
 
@@ -42,19 +42,16 @@ image=ubuntu:
 
 job=suisiann-giliau-pianma:
   use: ubuntu
+  env:
+  - PANPUN={env.PANPUN}
   command: |
     bash -eux -c '
       apt-get update
       apt-get install -y sox
-      rm -rf tsiamsi-${PANPUN} ${PANPUN}-22050 liankiat
-      mkdir -p tsiamsi-${PANPUN}/ImTong/
-      find ${PANPUN} -name "*wav" -exec sox {} -b 16 -c 1 -r 16k tsiamsi-{} \;
-      mv tsiamsi-${PANPUN} ${PANPUN}-22050
-      cp ${PANPUN}/*csv ${PANPUN}-22050
-      ln -s ${PANPUN}-22050 liankiat
+      find . -name "*wav" -exec sox {} -b 16 -c 1 -r 16k /giliau/{} \;
     '
-  mounts: [giliau_huetshut, tshamsoo, data, ]
-  working-dir: /giliau
+  mounts: [punte_giliau, giliau, tshamsoo, data, ]
+  working-dir: /punte_giliau
 
 alias=suisiann-giliau:
   tasks: [siatting, suisiann-giliau-pianma]
@@ -63,8 +60,13 @@ image=hunlian-khuanking:
   image: hunlian-khuanking
   context: hunlian-khuanking
 
-job=preprocess:
+alias=preprocess:
+  tasks: [siatting, preprocess-tsau, ]
+
+job=preprocess-tsau:
   use: hunlian-khuanking
+  env:
+  - PANPUN={env.PANPUN}
   command: |
     bash -eux -c '
       cp /tshamsoo/hparams.py .
