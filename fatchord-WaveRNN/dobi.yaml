@@ -4,7 +4,10 @@
 #
 
 meta:
-  project: SuiSiann-WaveRNN-0.2
+  project: SuiSiann-WaveRNN
+
+env=siatting:
+  variables: [PANPUN=0.2]
 
 mount=giliau_huetshut:
   bind: ./giliau/
@@ -37,11 +40,10 @@ image=ubuntu:
   tags: ['18.04']
   pull: once
 
-job=suisiann-giliau:
+job=suisiann-giliau-pianma:
   use: ubuntu
   command: |
     bash -eux -c '
-      export PANPUN=0.2
       apt-get update
       apt-get install -y sox
       rm -rf tsiamsi-${PANPUN} ${PANPUN}-22050 liankiat
@@ -53,6 +55,9 @@ job=suisiann-giliau:
     '
   mounts: [giliau_huetshut, tshamsoo, data, ]
   working-dir: /giliau
+
+alias=suisiann-giliau:
+  tasks: [siatting, suisiann-giliau-pianma]
 
 image=hunlian-khuanking:
   image: hunlian-khuanking
