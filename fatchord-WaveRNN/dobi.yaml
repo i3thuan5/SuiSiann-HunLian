@@ -4,16 +4,18 @@
 #
 
 meta:
-  project: SuiSiann-WaveRNN-0.2
+  project: SuiSiann-WaveRNN
 
-mount=giliau_huetshut:
-  bind: ./giliau/
-  path: /giliau/
+env=siatting:
+  variables: [PANPUN=0.2]
+
+mount=punte_giliau:
+  bind: ./{env.PANPUN}
+  path: /punte_giliau/
 
 mount=giliau:
-  bind: ./giliau/liankiat/
+  bind: ./{env.PANPUN}-22050/
   path: /giliau/
-  read-only: true
 
 mount=tshamsoo:
   bind: ./tshamsoo/
@@ -37,29 +39,35 @@ image=ubuntu:
   tags: ['18.04']
   pull: once
 
-job=suisiann-giliau:
+job=suisiann-giliau-pianma:
   use: ubuntu
+  env:
+  - PANPUN={env.PANPUN}
   command: |
     bash -eux -c '
-      export PANPUN=0.2
       apt-get update
       apt-get install -y sox
-      rm -rf tsiamsi-${PANPUN} ${PANPUN}-22050 liankiat
-      mkdir -p tsiamsi-${PANPUN}/ImTong/
-      find ${PANPUN} -name "*wav" -exec sox {} -b 16 -c 1 -r 16k tsiamsi-{} \;
-      mv tsiamsi-${PANPUN} ${PANPUN}-22050
-      cp ${PANPUN}/*csv ${PANPUN}-22050
-      ln -s ${PANPUN}-22050 liankiat
+      cp *csv /giliau/
+      find . -type d -exec mkdir -p /giliau/{} \;
+      find . -name "*wav" -exec sox {} -b 16 -c 1 -r 16k /giliau/{} \;
     '
-  mounts: [giliau_huetshut, tshamsoo, data, ]
-  working-dir: /giliau
+  mounts: [punte_giliau, giliau, tshamsoo, data, ]
+  working-dir: /punte_giliau
+
+alias=suisiann-giliau:
+  tasks: [siatting, suisiann-giliau-pianma]
 
 image=hunlian-khuanking:
   image: hunlian-khuanking
   context: hunlian-khuanking
 
-job=preprocess:
+alias=preprocess:
+  tasks: [siatting, preprocess-tsau, ]
+
+job=preprocess-tsau:
   use: hunlian-khuanking
+  env:
+  - PANPUN={env.PANPUN}
   command: |
     bash -eux -c '
       cp /tshamsoo/hparams.py .
@@ -96,6 +104,21 @@ job=tacotron-gta:
     '
   mounts: [tshamsoo, data, checkpoints, ]
 
+alias=preprocess-wavernn:
+  tasks: [siatting, preprocess-wavernn-tsau, ]
+
+job=preprocess-wavernn-tsau:
+  use: hunlian-khuanking
+  env:
+  - PANPUN={env.PANPUN}
+  command: |
+    bash -eux -c '
+      cp /tshamsoo/hparams.py .
+      cp /tshamsoo/preprocess-wavernn.py .
+      python preprocess-wavernn.py --path /data/gta/
+    '
+  mounts: [tshamsoo, data, ]
+
 job=wavernn:
   use: hunlian-khuanking
   env:
@@ -105,6 +128,7 @@ job=wavernn:
       cp /tshamsoo/hparams.py .
       cp /tshamsoo/text_init.py utils/text/__init__.py
       cp /tshamsoo/symbols.py utils/text/symbols.py
+      sed -i "s/dataset.pkl/dataset_wavernn.pkl/g" utils/dataset.py
       python train_wavernn.py --gta
     '
   mounts: [tshamsoo, data, checkpoints, outputs, ]
@@ -120,9 +144,9 @@ job=huatsiann:
       cp /tshamsoo/text_init.py utils/text/__init__.py
       cp /tshamsoo/symbols.py utils/text/symbols.py
       sed -i "s/required=True, //g" gen_tacotron.py
-      time python gen_tacotron.py -c --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" griffinlim
-      time python gen_tacotron.py -c --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" wavernn
-      time python gen_tacotron.py -c --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" wavernn --unbatched
+      time python gen_tacotron.py --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" griffinlim
+      time python gen_tacotron.py --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" wavernn
+      time python gen_tacotron.py --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" wavernn --unbatched
     '
   mounts: [tshamsoo, checkpoints, outputs, ]
 
@@ -133,7 +157,7 @@ job=quick:
   command: |
     bash -eux -c '
       sed -i "s/required=True, //g" gen_tacotron.py
-      python quick_start.py -u --input_text "What will happen if I run this command?"
+      time python quick_start.py --input_text "What will happen if I run this command?"
       mv quick_start model_outputs
     '
   mounts: [tshamsoo, checkpoints, outputs]

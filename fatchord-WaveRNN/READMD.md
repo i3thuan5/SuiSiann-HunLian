@@ -5,30 +5,33 @@
 - dobi
 - sox
 
+## 檢查環境
+`dobi quick`，看`model_outputs/`敢有正常合成音檔。
+
 ## 步
-1. 先掠 [SuiSiann-Dataset](https://suisiann-dataset.ithuan.tw/)，轉做對應頻率
+1. 先掠 [SuiSiann-Dataset](https://suisiann-dataset.ithuan.tw/)，壓縮檔tháu--khui，會生做按呢
 ```
-export PANPUN=0.2
-mkdir -p tsiamsi-${PANPUN}/ImTong/
-find ${PANPUN} -name '*wav' -exec sox {} -b 16 -c 1 -r 16k tsiamsi-{} \;
-mv tsiamsi-${PANPUN} ${PANPUN}-22050
-cp ${PANPUN}/*csv ${PANPUN}-22050
-ln -s ${PANPUN}-22050 giliau
+.
+├── 0.2
+│   ├── ImTong
+│   │   ├── SuiSiann_0001.wav
+│   │   ├── SuiSiann_0002.wav
+│   │   ├── SuiSiann_0003.wav
+│   │   ├── SuiSiann_0004.wav
+│   │   ├── SuiSiann_0005.wav
+│   │    ...
+│   └── SuiSiann.csv
+├── dobi.yaml
+├── Dockerfile
+...
 ```
-2. `dobi preprocess`
-3. `dobi tacotron`
-4. `dobi tacotron-gta`
-5. `dobi wavernn`
-
-### 提掉大檔
-Tacotron 尾仔ê GTA ê留較短ê檔，所以ē-tàng整理出來予WaveRNN用
-```
-ls data/gta/ | sed 's/.npy//g' | tee gta_u
-find data/mel/ -type f | grep -v -f gta_u  | xargs rm 
-find data/quant/ -type f | grep -v -f gta_u  | xargs rm 
-find 0.1-22050-gta/ImTong/ -type f | grep -v -f gta_u  | xargs rm 
-```
-
+2. `dobi suisiann-giliau`，轉做22050Hz
+3. `dobi preprocess`，產生tactorn格式
+4. `dobi tacotron`，訓練Tacotron模型
+5. `dobi tacotron-gta`，Tī tactorn訓練中，產生gta檔案
+6. `dobi preprocess-wavernn-tsau`，照gta檔案，產生wavernn需要ê`dataset.pkl`
+7. `dobi wavernn`，訓練WaveRNN模型
+8. `dobi huatsiann`，合成語句
 
 #### Pau--khi-lai
 ```
@@ -39,7 +42,7 @@ docker run --rm -ti -e CUDA_VISIBLE_DEVICES=1 -v `pwd`/kiatko:/kiatko -p 5000:50
 docker run --rm -ti -e FORCE_CPU=True -v `pwd`/kiatko:/kiatko -p 5000:5000 suisiann-wavernn:SuiSiann-WaveRNN-HokBu-fafoy
 ```
 
-##### Tshi
+##### Tshi(舊)
 Python
 ```python
 from http.client import HTTPConnection

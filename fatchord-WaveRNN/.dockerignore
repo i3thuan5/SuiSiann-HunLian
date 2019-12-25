@@ -1,0 +1,6 @@
+[0-9]*/
+data/
+model_outputs/
+kiatko/
+checkpoints/suisiann_lsa_smooth_attention.tacotron/[^l]*
+checkpoints/suisiann_raw.wavernn/[^l]*
