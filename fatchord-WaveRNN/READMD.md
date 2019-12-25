@@ -39,7 +39,7 @@ dobi hokbu-khuanking
 docker run --rm -ti -e CUDA_VISIBLE_DEVICES=1 -v `pwd`/kiatko:/kiatko -p 5000:5000 suisiann-wavernn:SuiSiann-WaveRNN-HokBu-fafoy
 ```
 
-##### Tshi
+##### Tshi(舊)
 Python
 ```python
 from http.client import HTTPConnection
@@ -54,7 +54,7 @@ headers = {
     "Content-type": "application/x-www-form-urlencoded",
     "Accept": "text/plain"
 }
-it_conn = HTTPConnection('192.168.33.20', port=5000)
+it_conn = HTTPConnection('localhost', port=5000)
 it_conn.request("POST", '/', 參數, headers)
 it_conn.getresponse().read()
 ```

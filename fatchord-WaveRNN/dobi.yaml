@@ -144,9 +144,9 @@ job=huatsiann:
       cp /tshamsoo/text_init.py utils/text/__init__.py
       cp /tshamsoo/symbols.py utils/text/symbols.py
       sed -i "s/required=True, //g" gen_tacotron.py
-      time python gen_tacotron.py -c --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" griffinlim
-      time python gen_tacotron.py -c --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" wavernn
-      time python gen_tacotron.py -c --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" wavernn --unbatched
+      time python gen_tacotron.py --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" griffinlim
+      time python gen_tacotron.py --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" wavernn
+      time python gen_tacotron.py --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" wavernn --unbatched
     '
   mounts: [tshamsoo, checkpoints, outputs, ]
 
@@ -157,7 +157,7 @@ job=quick:
   command: |
     bash -eux -c '
       sed -i "s/required=True, //g" gen_tacotron.py
-      python quick_start.py -u --input_text "What will happen if I run this command?"
+      time python quick_start.py --input_text "What will happen if I run this command?"
       mv quick_start model_outputs
     '
   mounts: [tshamsoo, checkpoints, outputs]
