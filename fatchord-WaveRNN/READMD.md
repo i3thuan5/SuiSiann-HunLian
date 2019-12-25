@@ -36,7 +36,10 @@
 #### Pau--khi-lai
 ```
 dobi hokbu-khuanking
+# GPU
 docker run --rm -ti -e CUDA_VISIBLE_DEVICES=1 -v `pwd`/kiatko:/kiatko -p 5000:5000 suisiann-wavernn:SuiSiann-WaveRNN-HokBu-fafoy
+# CPU
+docker run --rm -ti -e FORCE_CPU=True -v `pwd`/kiatko:/kiatko -p 5000:5000 suisiann-wavernn:SuiSiann-WaveRNN-HokBu-fafoy
 ```
 
 ##### Tshi(舊)
@@ -54,7 +57,7 @@ headers = {
     "Content-type": "application/x-www-form-urlencoded",
     "Accept": "text/plain"
 }
-it_conn = HTTPConnection('localhost', port=5000)
+it_conn = HTTPConnection('hapsing', port=5000)
 it_conn.request("POST", '/', 參數, headers)
 it_conn.getresponse().read()
 ```
