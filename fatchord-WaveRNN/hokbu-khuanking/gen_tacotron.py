@@ -15,12 +15,12 @@ def thak():
     class Tshamsoo():
         force_cpu = os.getenv('FORCE_CPU', False)
         hp_file = 'hparams.py'
-        vocoder = 'wavernn'
-        batched = True
-        target = None
-        overlap = None
+        vocoder = os.getenv('VOCODER', 'wavernn')
+        batched = os.getenv('BATCHED', True)
+        target = os.getenv('TARGET', None)
+        overlap = os.getenv('OVERLAP', None)
         tts_weights = None
-        save_attn = False
+        save_attn = os.getenv('SAVE_ATTN', False)
         voc_weights = None
 
 
