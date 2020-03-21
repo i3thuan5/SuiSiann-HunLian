@@ -14,7 +14,7 @@ mount=punte_giliau:
   path: /punte_giliau/
 
 mount=giliau:
-  bind: ./{env.PANPUN}-22050/
+  bind: ./{env.PANPUN}-16k/
   path: /giliau/
 
 mount=tshamsoo:
