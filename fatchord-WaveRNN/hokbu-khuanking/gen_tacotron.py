@@ -43,8 +43,8 @@ def thak():
             args.batched = hp.voc_gen_batched
 
         batched = args.batched
-        target = args.target
-        overlap = args.overlap
+        target = int(args.target)
+        overlap = int(args.overlap)
 
     tts_weights = args.tts_weights
     save_attn = args.save_attn
