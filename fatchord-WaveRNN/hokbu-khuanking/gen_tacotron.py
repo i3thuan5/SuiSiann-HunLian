@@ -159,7 +159,7 @@ def tsau(input_text, save_path):
 
         if args.vocoder == 'wavernn':
             m = torch.tensor(m).unsqueeze(0)
-            voc_model.generate(m, save_path, batched, hp.voc_target, hp.voc_overlap, hp.mu_law)
+            voc_model.generate(m, save_path, batched, target, overlap, hp.mu_law)
         elif args.vocoder == 'griffinlim':
             wav = reconstruct_waveform(m, n_iter=args.iters)
             save_wav(wav, save_path)
