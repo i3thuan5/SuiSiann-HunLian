@@ -163,6 +163,6 @@ job=quick:
   mounts: [tshamsoo, checkpoints, outputs]
 
 image=hokbu-khuanking:
-  image: suisiann-wavernn
+  image: i3thuan5/suisiann-wavernn
   context: .
 
