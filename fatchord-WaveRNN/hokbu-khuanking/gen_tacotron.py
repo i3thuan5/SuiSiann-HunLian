@@ -15,12 +15,12 @@ def thak():
     class Tshamsoo():
         force_cpu = os.getenv('FORCE_CPU', False)
         hp_file = 'hparams.py'
-        vocoder = 'wavernn'
-        batched = True
-        target = None
-        overlap = None
+        vocoder = os.getenv('VOCODER', 'wavernn')
+        batched = os.getenv('BATCHED', True)
+        target = os.getenv('TARGET', None)
+        overlap = os.getenv('OVERLAP', None)
         tts_weights = None
-        save_attn = False
+        save_attn = os.getenv('SAVE_ATTN', False)
         voc_weights = None
 
 
@@ -43,8 +43,8 @@ def thak():
             args.batched = hp.voc_gen_batched
 
         batched = args.batched
-        target = args.target
-        overlap = args.overlap
+        target = int(args.target)
+        overlap = int(args.overlap)
 
     tts_weights = args.tts_weights
     save_attn = args.save_attn
@@ -159,7 +159,7 @@ def tsau(input_text, save_path):
 
         if args.vocoder == 'wavernn':
             m = torch.tensor(m).unsqueeze(0)
-            voc_model.generate(m, save_path, batched, hp.voc_target, hp.voc_overlap, hp.mu_law)
+            voc_model.generate(m, save_path, batched, target, overlap, hp.mu_law)
         elif args.vocoder == 'griffinlim':
             wav = reconstruct_waveform(m, n_iter=args.iters)
             save_wav(wav, save_path)
