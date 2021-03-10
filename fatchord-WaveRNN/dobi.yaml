@@ -21,6 +21,21 @@ alias=giliau-pianma:
 alias=preprocess-tacotron:
   tasks: [siatting, preprocess-tacotron-job, ]
 
+alias=tacotron:
+  tasks: [siatting, tacotron-job, ]
+
+alias=tacotron-gta:
+  tasks: [siatting, tacotron-gta-job, ]
+
+alias=preprocess-wavernn:
+  tasks: [siatting, preprocess-wavernn-job, ]
+
+alias=wavernn:
+  tasks: [siatting, wavernn-job, ]
+
+alias=huatsiann:
+  tasks: [siatting, huatsiann-job, ]
+
 mount=punte_giliau:
   bind: ./{env.PANPUN}
   path: /punte_giliau/
@@ -109,9 +124,10 @@ job=preprocess-tacotron-job:
     '
   mounts: [giliau, tshamsoo, data, ]
 
-job=tacotron:
+job=tacotron-job:
   use: hunlian-khuanking
   env:
+  - PANPUN={env.PANPUN}
   - CUDA_VISIBLE_DEVICES=0
   command: |
     bash -eux -c '
@@ -122,9 +138,10 @@ job=tacotron:
     '
   mounts: [tshamsoo, data, checkpoints, ]
 
-job=tacotron-gta:
+job=tacotron-gta-job:
   use: hunlian-khuanking
   env:
+  - PANPUN={env.PANPUN}
   - CUDA_VISIBLE_DEVICES=0
   command: |
     bash -eux -c '
@@ -135,10 +152,7 @@ job=tacotron-gta:
     '
   mounts: [tshamsoo, data, checkpoints, ]
 
-alias=preprocess-wavernn:
-  tasks: [siatting, preprocess-wavernn-tsau, ]
-
-job=preprocess-wavernn-tsau:
+job=preprocess-wavernn-job:
   use: hunlian-khuanking
   env:
   - PANPUN={env.PANPUN}
@@ -150,9 +164,10 @@ job=preprocess-wavernn-tsau:
     '
   mounts: [tshamsoo, data, ]
 
-job=wavernn:
+job=wavernn-job:
   use: hunlian-khuanking
   env:
+  - PANPUN={env.PANPUN}
   - CUDA_VISIBLE_DEVICES=0
   command: |
     bash -eux -c '
@@ -164,10 +179,10 @@ job=wavernn:
     '
   mounts: [tshamsoo, data, checkpoints, outputs, ]
 
-
-job=huatsiann:
+job=huatsiann-job:
   use: hunlian-khuanking
   env:
+  - PANPUN={env.PANPUN}
   - CUDA_VISIBLE_DEVICES=1
   command: |
     bash -eux -c '
@@ -181,19 +196,6 @@ job=huatsiann:
     '
   mounts: [tshamsoo, checkpoints, outputs, ]
 
-job=quick:
-  use: hunlian-khuanking
-  env:
-  - CUDA_VISIBLE_DEVICES=1
-  command: |
-    bash -eux -c '
-      sed -i "s/required=True, //g" gen_tacotron.py
-      time python quick_start.py --input_text "What will happen if I run this command?"
-      mv quick_start model_outputs
-    '
-  mounts: [tshamsoo, checkpoints, outputs]
-
 image=hokbu-khuanking:
   image: i3thuan5/suisiann-wavernn
   context: .
-
