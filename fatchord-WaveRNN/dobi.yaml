@@ -7,7 +7,12 @@ meta:
   project: SuiSiann-WaveRNN
 
 env=siatting:
-  variables: [PANPUN=0.2]
+  variables:
+  - PANPUN=0.2
+  - BANGTSI=https://www.dropbox.com/s/gbq6t6va41m4otz/SuiSiann-0.2.tar?dl=0
+
+alias=liah-giliau:
+  tasks: [siatting, liah-giliau-job]
 
 mount=punte_giliau:
   bind: ./{env.PANPUN}
@@ -38,6 +43,19 @@ image=ubuntu:
   image: ubuntu
   tags: ['18.04']
   pull: once
+
+job=liah-giliau-job:
+  use: ubuntu
+  env:
+  - PANPUN={env.PANPUN}
+  - BANGTSI={env.BANGTSI}
+  command: |
+    bash -eux -c '
+      apt-get update
+      apt-get install -y wget
+      wget -O - $BANGTSI | tar -xvf - -C /punte_giliau
+    '
+  mounts: [punte_giliau, ]
 
 job=suisiann-giliau-pianma:
   use: ubuntu

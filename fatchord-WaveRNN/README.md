@@ -1,15 +1,14 @@
 # WaveRNN
 自 https://github.com/fatchord/WaveRNN 來訓練。
 
-## 需要
+## 安
 - dobi
-- sox
 
 ## 檢查環境
 `dobi quick`，看`model_outputs/`敢有正常合成音檔。
 
 ## 步
-1. 先掠 [SuiSiann-Dataset](https://suisiann-dataset.ithuan.tw/)，壓縮檔tháu--khui，會生做按呢
+1. 先用`dobi liah-giliau`，會掠 [SuiSiann-Dataset](https://suisiann-dataset.ithuan.tw/)，掠好會生做按呢
 ```
 .
 ├── 0.2
