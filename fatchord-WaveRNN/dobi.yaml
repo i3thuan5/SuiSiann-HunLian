@@ -10,9 +10,13 @@ env=siatting:
   variables:
   - PANPUN=0.2
   - BANGTSI=https://www.dropbox.com/s/gbq6t6va41m4otz/SuiSiann-0.2.tar?dl=0
+  - PINLUT=16k
 
 alias=liah-giliau:
-  tasks: [siatting, liah-giliau-job]
+  tasks: [siatting, liah-giliau-job, sua-tshutlai]
+
+alias=giliau-pianma:
+  tasks: [siatting, giliau-pianma-job]
 
 mount=punte_giliau:
   bind: ./{env.PANPUN}
@@ -57,23 +61,32 @@ job=liah-giliau-job:
     '
   mounts: [punte_giliau, ]
 
-job=suisiann-giliau-pianma:
+job=sua-tshutlai:
   use: ubuntu
   env:
   - PANPUN={env.PANPUN}
+  command: |
+    bash -eux -c '
+      mv /punte_giliau/$PANPUN/* /punte_giliau
+      rmdir /punte_giliau/$PANPUN
+    '
+  mounts: [punte_giliau, ]
+
+job=giliau-pianma-job:
+  use: ubuntu
+  env:
+  - PANPUN={env.PANPUN}
+  - PINLUT={env.PINLUT}
   command: |
     bash -eux -c '
       apt-get update
       apt-get install -y sox
       cp *csv /giliau/
       find . -type d -exec mkdir -p /giliau/{} \;
-      find . -name "*wav" -exec sox {} -b 16 -c 1 -r 16k /giliau/{} \;
+      find . -name "*wav" -exec sox {} -b 16 -c 1 -r $PINLUT /giliau/{} \;
     '
-  mounts: [punte_giliau, giliau, tshamsoo, data, ]
+  mounts: [punte_giliau, giliau, ]
   working-dir: /punte_giliau
-
-alias=suisiann-giliau:
-  tasks: [siatting, suisiann-giliau-pianma]
 
 image=hunlian-khuanking:
   image: hunlian-khuanking

@@ -24,7 +24,7 @@
 ├── Dockerfile
 ...
 ```
-2. `dobi suisiann-giliau`，轉做22050Hz
+2. `dobi giliau-pianma`，wave downsample 閣降做 16bits，上尾合成較緊
 3. `dobi preprocess`，產生tactorn格式
 4. `dobi tacotron`，訓練Tacotron模型
 5. `dobi tacotron-gta`，Tī tactorn訓練中，產生gta檔案
