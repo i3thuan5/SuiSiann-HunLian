@@ -41,7 +41,7 @@ mount=checkpoints:
 
 image=ubuntu:
   image: ubuntu
-  tags: ['18.04']
+  tags: ['20.04']
   pull: once
 
 job=liah-giliau-job:
