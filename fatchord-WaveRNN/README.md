@@ -5,7 +5,7 @@
 - dobi
 
 ## 步
-1. 先用`dobi liah-giliau`，會掠 [SuiSiann-Dataset](https://suisiann-dataset.ithuan.tw/)，掠好會生做按呢
+1. 先用`time dobi liah-giliau`，會掠 [SuiSiann-Dataset](https://suisiann-dataset.ithuan.tw/)，掠好會生做按呢
 ```
 .
 ├── 0.2
@@ -21,16 +21,16 @@
 ├── Dockerfile
 ...
 ```
-2. `dobi giliau-pianma`，wave downsample 閣降做 16bits，上尾合成較緊
-3. `dobi preprocess-tacotron`，準備tactorn格式。
-4. `dobi tacotron`，訓練Tacotron模型。若是tī tactorn訓練中，欲產生gta檔案，走`dobi tacotron-gta`。
-5. `dobi preprocess-wavernn`，照gta檔案，產生wavernn需要ê`dataset.pkl`
-6. `dobi wavernn`，訓練WaveRNN模型
-7. `dobi huatsiann`，合成語句
+2. `time dobi giliau-pianma`，wave downsample 閣降做 16bits，上尾合成較緊
+3. `time dobi preprocess-tacotron`，準備tactorn格式。
+4. `time dobi tacotron`，訓練Tacotron模型。若是tī tactorn訓練中，欲產生gta檔案，走`dobi tacotron-gta`。
+5. `time dobi preprocess-wavernn`，照gta檔案，產生wavernn需要ê`dataset.pkl`
+6. `time dobi wavernn`，訓練WaveRNN模型
+7. `time dobi huatsiann`，合成語句
 
 #### Pau--khi-lai
 ```
-dobi hokbu-khuanking
+time dobi hokbu-khuanking
 # GPU
 docker run --rm -ti -e CUDA_VISIBLE_DEVICES=1 -v `pwd`/kiatko:/kiatko -p 5000:5000 i3thuan5/suisiann-wavernn:SuiSiann-WaveRNN-HokBu-fafoy
 # CPU
