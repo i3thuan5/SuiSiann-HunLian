@@ -1,15 +1,11 @@
 # WaveRNN
 自 https://github.com/fatchord/WaveRNN 來訓練。
 
-## 需要
+## 安
 - dobi
-- sox
-
-## 檢查環境
-`dobi quick`，看`model_outputs/`敢有正常合成音檔。
 
 ## 步
-1. 先掠 [SuiSiann-Dataset](https://suisiann-dataset.ithuan.tw/)，壓縮檔tháu--khui，會生做按呢
+1. 先用`dobi liah-giliau`，會掠 [SuiSiann-Dataset](https://suisiann-dataset.ithuan.tw/)，掠好會生做按呢
 ```
 .
 ├── 0.2
@@ -25,13 +21,12 @@
 ├── Dockerfile
 ...
 ```
-2. `dobi suisiann-giliau`，轉做22050Hz
-3. `dobi preprocess`，產生tactorn格式
-4. `dobi tacotron`，訓練Tacotron模型
-5. `dobi tacotron-gta`，Tī tactorn訓練中，產生gta檔案
-6. `dobi preprocess-wavernn-tsau`，照gta檔案，產生wavernn需要ê`dataset.pkl`
-7. `dobi wavernn`，訓練WaveRNN模型
-8. `dobi huatsiann`，合成語句
+2. `dobi giliau-pianma`，wave downsample 閣降做 16bits，上尾合成較緊
+3. `dobi preprocess-tacotron`，準備tactorn格式。
+4. `dobi tacotron`，訓練Tacotron模型。若是tī tactorn訓練中，欲產生gta檔案，走`dobi tacotron-gta`。
+5. `dobi preprocess-wavernn`，照gta檔案，產生wavernn需要ê`dataset.pkl`
+6. `dobi wavernn`，訓練WaveRNN模型
+7. `dobi huatsiann`，合成語句
 
 #### Pau--khi-lai
 ```

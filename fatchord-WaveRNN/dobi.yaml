@@ -7,7 +7,34 @@ meta:
   project: SuiSiann-WaveRNN
 
 env=siatting:
-  variables: [PANPUN=0.2]
+  variables:
+  - PANPUN=0.2
+  - BANGTSI=https://www.dropbox.com/s/gbq6t6va41m4otz/SuiSiann-0.2.tar?dl=0
+  - PINLUT=16k
+
+alias=liah-giliau:
+  tasks: [siatting, liah-giliau-job, sua-tshutlai]
+
+alias=giliau-pianma:
+  tasks: [siatting, giliau-pianma-job]
+
+alias=preprocess-tacotron:
+  tasks: [siatting, preprocess-tacotron-job, ]
+
+alias=tacotron:
+  tasks: [siatting, tacotron-job, ]
+
+alias=tacotron-gta:
+  tasks: [siatting, tacotron-gta-job, ]
+
+alias=preprocess-wavernn:
+  tasks: [siatting, preprocess-wavernn-job, ]
+
+alias=wavernn:
+  tasks: [siatting, wavernn-job, ]
+
+alias=huatsiann:
+  tasks: [siatting, huatsiann-job, ]
 
 mount=punte_giliau:
   bind: ./{env.PANPUN}
@@ -23,64 +50,84 @@ mount=tshamsoo:
   read-only: true
 
 mount=data:
-  bind: ./data/
+  bind: ./{env.PANPUN}-data/
   path: /data/
 
 mount=outputs:
-  bind: ./model_outputs/
+  bind: ./{env.PANPUN}-model_outputs/
   path: /WaveRNN/model_outputs/
 
 mount=checkpoints:
-  bind: ./checkpoints/
+  bind: ./{env.PANPUN}-checkpoints/
   path: /WaveRNN/checkpoints/
 
 image=ubuntu:
   image: ubuntu
-  tags: ['18.04']
+  tags: ['20.04']
   pull: once
 
-job=suisiann-giliau-pianma:
+job=liah-giliau-job:
   use: ubuntu
   env:
   - PANPUN={env.PANPUN}
+  - BANGTSI={env.BANGTSI}
+  command: |
+    bash -eux -c '
+      apt-get update
+      apt-get install -y wget
+      wget -O - $BANGTSI | tar -xvf - -C /punte_giliau
+    '
+  mounts: [punte_giliau, ]
+
+job=sua-tshutlai:
+  use: ubuntu
+  env:
+  - PANPUN={env.PANPUN}
+  command: |
+    bash -eux -c '
+      mv /punte_giliau/$PANPUN/* /punte_giliau
+      rmdir /punte_giliau/$PANPUN
+    '
+  mounts: [punte_giliau, ]
+
+job=giliau-pianma-job:
+  use: ubuntu
+  env:
+  - PANPUN={env.PANPUN}
+  - PINLUT={env.PINLUT}
   command: |
     bash -eux -c '
       apt-get update
       apt-get install -y sox
       cp *csv /giliau/
       find . -type d -exec mkdir -p /giliau/{} \;
-      find . -name "*wav" -exec sox {} -b 16 -c 1 -r 16k /giliau/{} \;
+      find . -name "*wav" -exec sox {} -b 16 -c 1 -r $PINLUT /giliau/{} \;
     '
-  mounts: [punte_giliau, giliau, tshamsoo, data, ]
+  mounts: [punte_giliau, giliau, ]
   working-dir: /punte_giliau
-
-alias=suisiann-giliau:
-  tasks: [siatting, suisiann-giliau-pianma]
 
 image=hunlian-khuanking:
   image: hunlian-khuanking
   context: hunlian-khuanking
 
-alias=preprocess:
-  tasks: [siatting, preprocess-tsau, ]
-
-job=preprocess-tsau:
+job=preprocess-tacotron-job:
   use: hunlian-khuanking
   env:
   - PANPUN={env.PANPUN}
   command: |
     bash -eux -c '
       cp /tshamsoo/hparams.py .
-      cp /tshamsoo/preprocess.py .
+      cp /tshamsoo/preprocess-tacotron.py .
       cp /tshamsoo/text_init.py utils/text/__init__.py
       cp /tshamsoo/symbols.py utils/text/symbols.py
-      python preprocess.py --path /giliau/
+      python preprocess-tacotron.py --path /giliau/
     '
   mounts: [giliau, tshamsoo, data, ]
 
-job=tacotron:
+job=tacotron-job:
   use: hunlian-khuanking
   env:
+  - PANPUN={env.PANPUN}
   - CUDA_VISIBLE_DEVICES=0
   command: |
     bash -eux -c '
@@ -91,9 +138,10 @@ job=tacotron:
     '
   mounts: [tshamsoo, data, checkpoints, ]
 
-job=tacotron-gta:
+job=tacotron-gta-job:
   use: hunlian-khuanking
   env:
+  - PANPUN={env.PANPUN}
   - CUDA_VISIBLE_DEVICES=0
   command: |
     bash -eux -c '
@@ -104,10 +152,7 @@ job=tacotron-gta:
     '
   mounts: [tshamsoo, data, checkpoints, ]
 
-alias=preprocess-wavernn:
-  tasks: [siatting, preprocess-wavernn-tsau, ]
-
-job=preprocess-wavernn-tsau:
+job=preprocess-wavernn-job:
   use: hunlian-khuanking
   env:
   - PANPUN={env.PANPUN}
@@ -119,9 +164,10 @@ job=preprocess-wavernn-tsau:
     '
   mounts: [tshamsoo, data, ]
 
-job=wavernn:
+job=wavernn-job:
   use: hunlian-khuanking
   env:
+  - PANPUN={env.PANPUN}
   - CUDA_VISIBLE_DEVICES=0
   command: |
     bash -eux -c '
@@ -133,10 +179,10 @@ job=wavernn:
     '
   mounts: [tshamsoo, data, checkpoints, outputs, ]
 
-
-job=huatsiann:
+job=huatsiann-job:
   use: hunlian-khuanking
   env:
+  - PANPUN={env.PANPUN}
   - CUDA_VISIBLE_DEVICES=1
   command: |
     bash -eux -c '
@@ -150,19 +196,6 @@ job=huatsiann:
     '
   mounts: [tshamsoo, checkpoints, outputs, ]
 
-job=quick:
-  use: hunlian-khuanking
-  env:
-  - CUDA_VISIBLE_DEVICES=1
-  command: |
-    bash -eux -c '
-      sed -i "s/required=True, //g" gen_tacotron.py
-      time python quick_start.py --input_text "What will happen if I run this command?"
-      mv quick_start model_outputs
-    '
-  mounts: [tshamsoo, checkpoints, outputs]
-
 image=hokbu-khuanking:
   image: i3thuan5/suisiann-wavernn
   context: .
-
