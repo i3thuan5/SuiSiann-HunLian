@@ -2,7 +2,10 @@
 自 https://github.com/fatchord/WaveRNN 來訓練。
 
 ## 安
-- dobi
+- [dobi](https://github.com/dnephin/dobi)
+- [docker](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
+- [docker-compose](https://docs.docker.com/compose/install/)
+- 設定docker權限`sudo usermod -aG docker $USER`
 
 ## 步
 1. 先用`time dobi liah-giliau`，會掠 [SuiSiann-Dataset](https://suisiann-dataset.ithuan.tw/)，掠好會生做按呢
@@ -21,7 +24,7 @@
 ├── Dockerfile
 ...
 ```
-2. `time dobi giliau-pianma`，wave downsample 閣降做 16bits，上尾合成較緊
+2. `time dobi tsuan-pianma`，wave downsample 閣降做 16bits，上尾合成較緊
 3. `time dobi preprocess-tacotron`，準備tactorn格式。
 4. `time dobi tacotron`，訓練Tacotron模型。若是tī tactorn訓練中，欲產生gta檔案，走`dobi tacotron-gta`。
 5. `time dobi preprocess-wavernn`，照gta檔案，產生wavernn需要ê`dataset.pkl`
