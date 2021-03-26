@@ -24,7 +24,7 @@
 ├── Dockerfile
 ...
 ```
-2. `time dobi giliau-pianma`，wave downsample 閣降做 16bits，上尾合成較緊
+2. `time dobi tsuan-pianma`，wave downsample 閣降做 16bits，上尾合成較緊
 3. `time dobi preprocess-tacotron`，準備tactorn格式。
 4. `time dobi tacotron`，訓練Tacotron模型。若是tī tactorn訓練中，欲產生gta檔案，走`dobi tacotron-gta`。
 5. `time dobi preprocess-wavernn`，照gta檔案，產生wavernn需要ê`dataset.pkl`
