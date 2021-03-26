@@ -8,8 +8,8 @@ meta:
 
 env=siatting:
   variables:
-  - PANPUN=0.2
-  - BANGTSI=https://www.dropbox.com/s/gbq6t6va41m4otz/SuiSiann-0.2.tar?dl=0
+  - PANPUN=0.2.1
+  - BANGTSI=https://www.dropbox.com/s/rye2sd0wo718bj5/SuiSiann-0.2.1.tar?dl=0
   - PINLUT=16k
 
 alias=liah-giliau:
