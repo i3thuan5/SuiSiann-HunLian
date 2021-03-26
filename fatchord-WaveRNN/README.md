@@ -2,7 +2,10 @@
 自 https://github.com/fatchord/WaveRNN 來訓練。
 
 ## 安
-- dobi
+- [dobi](https://github.com/dnephin/dobi)
+- [docker](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
+- [docker-compose](https://docs.docker.com/compose/install/)
+- 設定docker權限`sudo usermod -aG docker $USER`
 
 ## 步
 1. 先用`time dobi liah-giliau`，會掠 [SuiSiann-Dataset](https://suisiann-dataset.ithuan.tw/)，掠好會生做按呢
