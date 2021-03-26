@@ -15,8 +15,8 @@ env=siatting:
 alias=liah-giliau:
   tasks: [siatting, liah-giliau-job, sua-tshutlai]
 
-alias=giliau-pianma:
-  tasks: [siatting, giliau-pianma-job]
+alias=tsuan-pianma:
+  tasks: [siatting, tsuan-pianma-job]
 
 alias=preprocess-tacotron:
   tasks: [siatting, preprocess-tacotron-job, ]
@@ -90,7 +90,7 @@ job=sua-tshutlai:
     '
   mounts: [punte_giliau, ]
 
-job=giliau-pianma-job:
+job=tsuan-pianma-job:
   use: ubuntu
   env:
   - PANPUN={env.PANPUN}
