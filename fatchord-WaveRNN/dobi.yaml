@@ -182,6 +182,7 @@ job=wavernn-job:
 job=huatsiann-job:
   use: hunlian-khuanking
   env:
+  - KU={env.KU:tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !}
   - PANPUN={env.PANPUN}
   - CUDA_VISIBLE_DEVICES=1
   command: |
@@ -190,9 +191,9 @@ job=huatsiann-job:
       cp /tshamsoo/text_init.py utils/text/__init__.py
       cp /tshamsoo/symbols.py utils/text/symbols.py
       sed -i "s/required=True, //g" gen_tacotron.py
-      time python gen_tacotron.py --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" griffinlim
-      time python gen_tacotron.py --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" wavernn
-      time python gen_tacotron.py --input_text "tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !" wavernn --unbatched
+      time python gen_tacotron.py --input_text "$KU" griffinlim
+      time python gen_tacotron.py --input_text "$KU" wavernn
+      time python gen_tacotron.py --input_text "$KU" wavernn --unbatched
     '
   mounts: [tshamsoo, checkpoints, outputs, ]
 
