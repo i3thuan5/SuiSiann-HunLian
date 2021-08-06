@@ -8,7 +8,7 @@ meta:
 
 env=siatting:
   variables:
-  - PANPUN=0.2.1
+  - PANPUN=1.0
   - BANGTSI=https://www.dropbox.com/s/rye2sd0wo718bj5/SuiSiann-0.2.1.tar?dl=0
   - PINLUT=16k
 
