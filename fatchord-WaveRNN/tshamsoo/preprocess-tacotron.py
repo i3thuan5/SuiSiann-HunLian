@@ -14,12 +14,6 @@ from utils.files import get_files
 from utils.paths import Paths
 
 
-from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
-from 臺灣言語工具.音標系統.閩南語.臺灣閩南語羅馬字拼音 import 臺灣閩南語羅馬字拼音
-from 臺灣言語工具.語音合成.閩南語音韻規則 import 閩南語音韻規則
-from 臺灣言語工具.語音合成 import 台灣話口語講法
-
-
 # Helper functions for argument types
 def valid_n_workers(num):
     n = int(num)
@@ -73,11 +67,7 @@ def suisiann(path: Union[str, Path], wav_files):
             mia = basename(tsua['音檔'])
             if mia in u_tihleh:
                 imtong = splitext(mia)[0]
-                hj = tsua['漢字']
-                lmj = tsua['羅馬字']
-                text_dict[imtong] = 台灣話口語講法(
-                    拆文分析器.建立句物件(hj, lmj)
-                )
+                text_dict[imtong] = tsua['口語調']
 
     return text_dict
 
