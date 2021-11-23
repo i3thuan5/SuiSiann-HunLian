@@ -196,7 +196,3 @@ job=huatsiann-job:
       time python gen_tacotron.py --input_text "$KU" wavernn --unbatched
     '
   mounts: [tshamsoo, checkpoints, outputs, ]
-
-image=hokbu-khuanking:
-  image: i3thuan5/suisiann-wavernn
-  context: .
