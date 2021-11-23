@@ -100,8 +100,9 @@ def thak():
 
 args, voc_model, tts_model, batched, target, overlap, save_attn = thak()
 
-from flask import Flask, escape, request
+from flask import Flask, request
 from os.path import join
+from tempfile import mkstemp
 
 app = Flask(__name__)
 
@@ -109,7 +110,12 @@ app = Flask(__name__)
 @app.route("/", methods=('POST',))
 def hapsing():
     taibun = request.form['taibun']
-    sootsai = request.form['sootsai']
+    try:
+        sootsai = request.form['sootsai']
+    except KeyError:
+        tongan = mkstemp(dir='/kiatko')
+        sootsai = tongan.name
+        tongan.close()
     imtong_sootsai = join('/kiatko', sootsai)
     tsau(taibun, imtong_sootsai)
     return sootsai
