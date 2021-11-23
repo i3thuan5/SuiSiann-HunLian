@@ -115,7 +115,7 @@ def hapsing():
         sootsai = request.form['sootsai']
         imtong_sootsai = join('/kiatko', sootsai)
     except KeyError:
-        tongan_id, imtong_sootsai = mkstemp(dir='/kiatko')
+        tongan_id, imtong_sootsai = mkstemp(dir='/kiatko', suffix='.wav')
         os.close(tongan_id)
         sootsai = basename(imtong_sootsai)
     tsau(taibun, imtong_sootsai)
