@@ -1,11 +1,14 @@
 version: '3.7'
 
 services:
-  habsang:
+  hapsing:
     build: ./hokbu-khuanking
     environment:
-      CUDA_VISIBLE_DEVICES: "all"
-      # FORCE_CPU: "True"
+      # - CUDA_VISIBLE_DEVICES=all
+      - CUDA_VISIBLE_DEVICES=0
+      - TARGET=2000
+      - OVERLAP=400
+      # - FORCE_CPU=True
     ports:
       - "5000:5000"
     volumes:
