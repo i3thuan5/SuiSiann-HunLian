@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   habsang:
-    build: ./server-kuangin
+    build: ./hokbu-khuanking
     environment:
       CUDA_VISIBLE_DEVICES: "all"
       # FORCE_CPU: "True"
