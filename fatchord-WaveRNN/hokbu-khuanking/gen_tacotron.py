@@ -11,6 +11,7 @@ from utils.dsp import reconstruct_waveform, save_wav
 import numpy as np
 import os
 
+
 def thak():
     class Tshamsoo():
         force_cpu = os.getenv('FORCE_CPU', False)
@@ -100,8 +101,9 @@ def thak():
 
 args, voc_model, tts_model, batched, target, overlap, save_attn = thak()
 
-from flask import Flask, escape, request
-from os.path import join
+from flask import Flask, request
+from os.path import join, basename
+from tempfile import mkstemp
 
 app = Flask(__name__)
 
@@ -109,8 +111,13 @@ app = Flask(__name__)
 @app.route("/", methods=('POST',))
 def hapsing():
     taibun = request.form['taibun']
-    sootsai = request.form['sootsai']
-    imtong_sootsai = join('/kiatko', sootsai)
+    try:
+        sootsai = request.form['sootsai']
+        imtong_sootsai = join('/kiatko', sootsai)
+    except KeyError:
+        tongan_id, imtong_sootsai = mkstemp(dir='/kiatko', suffix='.wav')
+        os.close(tongan_id)
+        sootsai = basename(imtong_sootsai)
     tsau(taibun, imtong_sootsai)
     return sootsai
 

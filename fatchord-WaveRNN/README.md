@@ -31,31 +31,29 @@
 6. `time dobi wavernn`，訓練WaveRNN模型
 7. `time dobi huatsiann`，合成語句
 
-#### Pau--khi-lai
+## Tshi
+### Curl
 ```
-time dobi hokbu-khuanking
-# GPU
-docker run --rm -ti -e CUDA_VISIBLE_DEVICES=1 -v `pwd`/kiatko:/kiatko -p 5000:5000 i3thuan5/suisiann-wavernn:SuiSiann-WaveRNN-HokBu-fafoy
-# CPU
-docker run --rm -ti -e FORCE_CPU=True -v `pwd`/kiatko:/kiatko -p 5000:5000 i3thuan5/suisiann-wavernn:SuiSiann-WaveRNN-HokBu-fafoy
+curl -i -X POST \
+  -H "Content-type: application/x-www-form-urlencoded" \
+  -H "Accept: text/plain" \
+  -d 'taibun=tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !' \
+  localhost:5000
 ```
-
-##### Tshi(舊)
-Python
+### Python3
 ```python
 from http.client import HTTPConnection
 from urllib.parse import urlencode
 
-taiBun='tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !'
+taiBun = 'tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !'
 參數 = urlencode({
     'taibun': taiBun,
-    'sootsai': 'taiBun/tshi.wav',
 })
 headers = {
     "Content-type": "application/x-www-form-urlencoded",
     "Accept": "text/plain"
 }
-it_conn = HTTPConnection('hapsing', port=5000)
+it_conn = HTTPConnection('localhost', port=5000)
 it_conn.request("POST", '/', 參數, headers)
 it_conn.getresponse().read()
 ```
