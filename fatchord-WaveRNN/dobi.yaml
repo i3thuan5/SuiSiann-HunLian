@@ -119,7 +119,7 @@ job=preprocess-tacotron-job:
       cp /tshamsoo/hparams.py .
       cp /tshamsoo/preprocess-tacotron.py .
       cp /tshamsoo/text_init.py utils/text/__init__.py
-      cp /tshamsoo/symbols.py utils/text/symbols.py
+      cp /tshamsoo/text_symbols.py utils/text/symbols.py
       python preprocess-tacotron.py --path /giliau/
     '
   mounts: [giliau, tshamsoo, data, ]
@@ -133,7 +133,7 @@ job=tacotron-job:
     bash -eux -c '
       cp /tshamsoo/hparams.py .
       cp /tshamsoo/text_init.py utils/text/__init__.py
-      cp /tshamsoo/symbols.py utils/text/symbols.py
+      cp /tshamsoo/text_symbols.py utils/text/symbols.py
       python train_tacotron.py
     '
   mounts: [tshamsoo, data, checkpoints, ]
@@ -147,7 +147,7 @@ job=tacotron-gta-job:
     bash -eux -c '
       cp /tshamsoo/hparams.py .
       cp /tshamsoo/text_init.py utils/text/__init__.py
-      cp /tshamsoo/symbols.py utils/text/symbols.py
+      cp /tshamsoo/text_symbols.py utils/text/symbols.py
       python train_tacotron.py --force_gta
     '
   mounts: [tshamsoo, data, checkpoints, ]
@@ -173,7 +173,7 @@ job=wavernn-job:
     bash -eux -c '
       cp /tshamsoo/hparams.py .
       cp /tshamsoo/text_init.py utils/text/__init__.py
-      cp /tshamsoo/symbols.py utils/text/symbols.py
+      cp /tshamsoo/text_symbols.py utils/text/symbols.py
       sed -i "s/dataset.pkl/dataset_wavernn.pkl/g" utils/dataset.py
       python train_wavernn.py --gta
     '
@@ -189,14 +189,10 @@ job=huatsiann-job:
     bash -eux -c '
       cp /tshamsoo/hparams.py .
       cp /tshamsoo/text_init.py utils/text/__init__.py
-      cp /tshamsoo/symbols.py utils/text/symbols.py
+      cp /tshamsoo/text_symbols.py utils/text/symbols.py
       sed -i "s/required=True, //g" gen_tacotron.py
       time python gen_tacotron.py --input_text "$KU" griffinlim
       time python gen_tacotron.py --input_text "$KU" wavernn
       time python gen_tacotron.py --input_text "$KU" wavernn --unbatched
     '
   mounts: [tshamsoo, checkpoints, outputs, ]
-
-image=hokbu-khuanking:
-  image: i3thuan5/suisiann-wavernn
-  context: .
