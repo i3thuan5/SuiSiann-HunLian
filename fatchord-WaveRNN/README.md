@@ -32,7 +32,15 @@
 7. `time dobi huatsiann`，合成語句
 
 ## Tshi
-Python3
+### Curl
+```
+curl -i -X POST \
+  -H "Content-type: application/x-www-form-urlencoded" \
+  -H "Accept: text/plain" \
+  -d 'taibun=tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !' \
+  localhost:5000
+```
+### Python3
 ```python
 from http.client import HTTPConnection
 from urllib.parse import urlencode
