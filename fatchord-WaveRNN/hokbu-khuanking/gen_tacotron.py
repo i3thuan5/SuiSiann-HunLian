@@ -11,6 +11,9 @@ from utils.dsp import reconstruct_waveform, save_wav
 import numpy as np
 import os
 
+from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
+from 臺灣言語工具.語音合成 import 台灣話口語講法
+
 
 def thak():
     class Tshamsoo():
@@ -110,7 +113,13 @@ app = Flask(__name__)
 
 @app.route("/", methods=('POST',))
 def hapsing():
-    taibun = request.form['taibun']
+    try:
+        taibun = request.form['taibun']
+        句物件 = 拆文分析器.對齊句物件(taibun, taibun)
+    except KeyError:
+        hunsu = request.form['hunsu']
+        句物件 = 拆文分析器.分詞句物件(hunsu)
+    khaugitiau = 台灣話口語講法(句物件) + ' .'
     try:
         sootsai = request.form['sootsai']
         imtong_sootsai = join('/kiatko', sootsai)
@@ -118,8 +127,9 @@ def hapsing():
         tongan_id, imtong_sootsai = mkstemp(dir='/kiatko', suffix='.wav')
         os.close(tongan_id)
         sootsai = basename(imtong_sootsai)
-    tsau(taibun, imtong_sootsai)
+    tsau(khaugitiau, imtong_sootsai)
     return sootsai
+
 
 def tsau(input_text, save_path):
     if input_text:
