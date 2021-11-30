@@ -11,6 +11,12 @@ from utils.dsp import reconstruct_waveform, save_wav
 import numpy as np
 import os
 
+
+from flask import Flask, request, make_response
+from os.path import join, basename
+from tempfile import mkstemp
+from urllib.parse import quote
+
 from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
 from 臺灣言語工具.語音合成 import 台灣話口語講法
 
@@ -104,10 +110,6 @@ def thak():
 
 args, voc_model, tts_model, batched, target, overlap, save_attn = thak()
 
-from flask import Flask, request
-from os.path import join, basename
-from tempfile import mkstemp
-
 app = Flask(__name__)
 
 
@@ -128,7 +130,13 @@ def hapsing():
         os.close(tongan_id)
         sootsai = basename(imtong_sootsai)
     tsau(khaugitiau, imtong_sootsai)
-    return sootsai
+
+    response = make_response(sootsai)
+    # nginx uses this path to serve the file
+    response.headers["X-Accel-Redirect"] = '/kiatko/{}'.format(
+        quote(sootsai),
+    )
+    return response
 
 
 def tsau(input_text, save_path):
