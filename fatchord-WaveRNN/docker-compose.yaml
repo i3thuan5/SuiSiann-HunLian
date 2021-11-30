@@ -2,8 +2,7 @@ version: '3.7'
 
 services:
   nginx:
-    build: ./hokbu-khuanking
-    image: nginx:1-alpine
+    build: ./hokbu-nginx
     volumes:
       - "./6-kiatko:/kiatko:ro"
     ports:
