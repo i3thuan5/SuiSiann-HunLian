@@ -43,18 +43,6 @@ def thak():
         raise argparse.ArgumentError('Must provide a valid vocoder type!')
 
     hp.configure(args.hp_file)  # Load hparams from file
-    # set defaults for any arguments that depend on hparams
-    if args.vocoder == 'wavernn':
-        if args.target is None:
-            args.target = hp.voc_target
-        if args.overlap is None:
-            args.overlap = hp.voc_overlap
-        if args.batched is None:
-            args.batched = hp.voc_gen_batched
-
-        batched = args.batched
-        target = int(args.target)
-        overlap = int(args.overlap)
 
     tts_weights = args.tts_weights
     save_attn = args.save_attn
@@ -68,6 +56,18 @@ def thak():
     print('Using device:', device)
 
     if args.vocoder == 'wavernn':
+        # set defaults for any arguments that depend on hparams
+        if args.target is None:
+            args.target = hp.voc_target
+        if args.overlap is None:
+            args.overlap = hp.voc_overlap
+        if args.batched is None:
+            args.batched = hp.voc_gen_batched
+
+        batched = args.batched
+        target = int(args.target)
+        overlap = int(args.overlap)
+
         print('\nInitialising WaveRNN Model...\n')
         # Instantiate WaveRNN Model
         voc_model = WaveRNN(rnn_dims=hp.voc_rnn_dims,
@@ -87,6 +87,9 @@ def thak():
         voc_model.load(voc_load_path)
     else:
         voc_model = None
+        batched = None
+        target = None
+        overlap = None
 
     print('\nInitialising Tacotron Model...\n')
 
