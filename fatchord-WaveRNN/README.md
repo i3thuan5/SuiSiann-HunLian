@@ -33,6 +33,12 @@
 
 ## Tshi
 ### Curl
+#### Get
+```bash
+time curl \
+  'localhost:5000/?taibun=Ta%CC%8Dk-ke%20ts%C3%B2-hu%C3%A9%20l%C3%A2i%20tshit-th%C3%B4%20!'
+```
+#### Post
 ```
 time curl -i -X POST \
   -H "Content-type: application/x-www-form-urlencoded" \
