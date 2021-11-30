@@ -85,6 +85,8 @@ def thak():
 
         voc_load_path = args.voc_weights if args.voc_weights else paths.voc_latest_weights
         voc_model.load(voc_load_path)
+    else:
+        voc_model = None
 
     print('\nInitialising Tacotron Model...\n')
 

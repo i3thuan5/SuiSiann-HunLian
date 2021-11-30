@@ -13,6 +13,7 @@ services:
     environment:
       # - CUDA_VISIBLE_DEVICES=all
       - CUDA_VISIBLE_DEVICES=0
+      # - VOCODER=griffinlim
       - TARGET=2000
       - OVERLAP=400
       # - FORCE_CPU=True
