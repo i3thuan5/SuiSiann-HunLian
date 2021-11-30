@@ -12,7 +12,7 @@ import numpy as np
 import os
 
 
-from flask import Flask, request, make_response
+from flask import Flask, request, redirect
 from os.path import join, basename
 from tempfile import mkstemp
 from urllib.parse import quote
@@ -131,11 +131,9 @@ def hapsing():
         sootsai = basename(imtong_sootsai)
     tsau(khaugitiau, imtong_sootsai)
 
-    response = make_response(sootsai)
-    # nginx uses this path to serve the file
-    response.headers["X-Accel-Redirect"] = '/kiatko/{}'.format(
+    response = redirect('/kiatko/{}'.format(
         quote(sootsai),
-    )
+    ))
     return response
 
 
