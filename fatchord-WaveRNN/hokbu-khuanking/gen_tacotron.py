@@ -113,17 +113,23 @@ args, voc_model, tts_model, batched, target, overlap, save_attn = thak()
 app = Flask(__name__)
 
 
-@app.route("/", methods=('POST',))
-def hapsing():
+@app.route("/", methods=('POST', 'GET'))
+def http_hapsing():
+    if request.method == 'POST':
+        return hapsing(request.form)
+    return hapsing(request.args)
+
+
+def hapsing(tshamsoo):
     try:
-        taibun = request.form['taibun']
+        taibun = tshamsoo['taibun']
         句物件 = 拆文分析器.對齊句物件(taibun, taibun)
     except KeyError:
-        hunsu = request.form['hunsu']
+        hunsu = tshamsoo['hunsu']
         句物件 = 拆文分析器.分詞句物件(hunsu)
     khaugitiau = 台灣話口語講法(句物件) + ' .'
     try:
-        sootsai = request.form['sootsai']
+        sootsai = tshamsoo['sootsai']
         imtong_sootsai = join('/kiatko', sootsai)
     except KeyError:
         tongan_id, imtong_sootsai = mkstemp(dir='/kiatko', suffix='.wav')
