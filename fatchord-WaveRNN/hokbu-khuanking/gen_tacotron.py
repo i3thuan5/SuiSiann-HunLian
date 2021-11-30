@@ -33,6 +33,7 @@ def thak():
         tts_weights = None
         save_attn = os.getenv('SAVE_ATTN', False)
         voc_weights = None
+        iters = os.getenv('GL_ITERS', 32)
 
     args = Tshamsoo()
     if args.vocoder in ['griffinlim', 'gl']:
