@@ -16,6 +16,7 @@ from flask import Flask, request, redirect
 from os.path import join, basename
 from tempfile import mkstemp
 from urllib.parse import quote
+import stat
 
 from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
 from 臺灣言語工具.語音合成 import 台灣話口語講法
@@ -32,7 +33,6 @@ def thak():
         tts_weights = None
         save_attn = os.getenv('SAVE_ATTN', False)
         voc_weights = None
-
 
     args = Tshamsoo()
     if args.vocoder in ['griffinlim', 'gl']:
@@ -128,6 +128,7 @@ def hapsing():
     except KeyError:
         tongan_id, imtong_sootsai = mkstemp(dir='/kiatko', suffix='.wav')
         os.close(tongan_id)
+        os.chmod(imtong_sootsai, stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
         sootsai = basename(imtong_sootsai)
     tsau(khaugitiau, imtong_sootsai)
 
