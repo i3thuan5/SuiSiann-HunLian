@@ -122,7 +122,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=['POST', 'GET'])
 @app.route("/bangtsam", methods=['POST', 'GET'])
-def bangtsam_tts(request):
+def bangtsam_tts():
     if request.method == 'POST':
         _tongan_hethong, bangtsi = hapsing(request.form)
     else:
@@ -131,7 +131,7 @@ def bangtsam_tts(request):
 
 
 @app.route("/hapsing", methods=['POST'])
-def line_tts(request):
+def line_tts():
     tongan_hethong, bangtsi = hapsing(request.form)
     sikan = get_duration(filename=tongan_hethong)
     return JsonResponse({
