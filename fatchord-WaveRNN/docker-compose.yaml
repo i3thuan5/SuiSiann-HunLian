@@ -5,8 +5,13 @@ services:
     build: ./hokbu-nginx
     volumes:
       - "./6-kiatko:/kiatko:ro"
-    ports:
-      - "5000:80"
+    networks:
+      - default
+      - nginx-bridge
+    environment:
+      - VIRTUAL_HOST=hapsing.ithuan.tw
+      - LETSENCRYPT_HOST=hapsing.ithuan.tw
+      - LETSENCRYPT_EMAIL=ithuan@ithuan.tw
     restart: always
   hapsing:
     build: ./hokbu-khuanking
@@ -24,3 +29,7 @@ services:
       - "./0.2.1-checkpoints:/WaveRNN/checkpoints"
       - "./6-kiatko:/kiatko"
     restart: always
+
+networks:
+  nginx-bridge:
+    external: true
