@@ -12,7 +12,7 @@ import numpy as np
 import os
 
 
-from flask import Flask, request, redirect
+from flask import Flask, request, Response
 from os.path import join, basename
 from tempfile import mkstemp
 from urllib.parse import quote
@@ -129,7 +129,7 @@ def bangtsam_tts():
     else:
         _tongan_hethong, bangtsi = hapsing(request.args)
 
-    huein = flask.Response()
+    huein = Response()
     huein.headers['X-Accel-Redirect'] = bangtsi
     return huein
 
