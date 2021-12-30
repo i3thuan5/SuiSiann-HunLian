@@ -131,9 +131,12 @@ def bangtsam_tts():
     return redirect(bangtsi)
 
 
-@app.route("/hapsing", methods=['POST'])
+@app.route("/hapsing", methods=['POST', 'GET'])
 def line_tts():
-    tongan_hethong, bangtsi = hapsing(request.form)
+    if request.method == 'POST':
+        tongan_hethong, bangtsi = hapsing(request.form)
+    else:
+        tongan_hethong, bangtsi = hapsing(request.args)
     sikan = get_duration(filename=tongan_hethong)
     return JsonResponse({
         'bangtsi': bangtsi,
