@@ -120,8 +120,8 @@ args, voc_model, tts_model, batched, target, overlap, save_attn = thak()
 app = Flask(__name__)
 
 
-@app.route("/", methods=('POST', 'GET'))
-@app.route("/bangtsam", methods=('POST', 'GET'))
+@app.route("/", methods=['POST', 'GET'])
+@app.route("/bangtsam", methods=['POST', 'GET'])
 def bangtsam_tts(request):
     if request.method == 'POST':
         _tongan_hethong, bangtsi = hapsing(request.form)
@@ -130,7 +130,7 @@ def bangtsam_tts(request):
     return redirect(bangtsi)
 
 
-@app.route("/hapsing", methods=('POST'))
+@app.route("/hapsing", methods=['POST'])
 def line_tts(request):
     tongan_hethong, bangtsi = hapsing(request.form)
     sikan = get_duration(filename=tongan_hethong)
