@@ -126,6 +126,25 @@ def http_hapsing():
     return hapsing(request.args)
 
 
+@app.route("/bangtsam", methods=('POST', 'GET'))
+def bangtsam_tts(request):
+    if request.method == 'POST':
+        bangtsi = hapsing(request.POST)
+    else:
+        bangtsi = hapsing(request.GET)
+    return redirect(bangtsi)
+
+
+@app.route("/hapsing", methods=('POST', 'GET'))
+def line_tts(request):
+    tsuliau = hapsing(request.POST)
+    sikan = get_duration(filename=tsuliau.siann.path)
+    return JsonResponse({
+        'bangtsi': tsuliau.mp3.url,
+        'sikan': sikan,
+    })
+
+
 def hapsing(tshamsoo):
     try:
         taibun = tshamsoo['taibun']
@@ -134,15 +153,10 @@ def hapsing(tshamsoo):
         hunsu = tshamsoo['hunsu']
         句物件 = 拆文分析器.分詞句物件(hunsu)
     khaugitiau = 台灣話口語講法(句物件) + ' .'
-    try:
-        sootsai = tshamsoo['sootsai']
-        imtong_sootsai = join('/kiatko', sootsai)
-    except KeyError:
-        tongan_id, imtong_sootsai = mkstemp(dir='/kiatko', suffix='.wav')
-        os.close(tongan_id)
-        os.chmod(imtong_sootsai, stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
-        sootsai = basename(imtong_sootsai)
-    tsau(khaugitiau, imtong_sootsai)
+    sootsai = hashlib.sha256(khaugitiau.encode()).hexdigest() + '.wav'
+    imtong_sootsai = join('/kiatko', sootsai)
+    if not isfile(imtong_sootsai):
+        tsau(khaugitiau, imtong_sootsai)
 
     response = redirect('/kiatko/{}'.format(
         quote(sootsai),
