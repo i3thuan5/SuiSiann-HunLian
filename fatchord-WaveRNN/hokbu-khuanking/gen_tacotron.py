@@ -145,9 +145,7 @@ def line_tts():
         tongan_hethong, bangtsi = hapsing(request.args)
     sikan = get_duration(filename=tongan_hethong)
     return jsonify({
-        'bangtsi': urljoin(
-            urljoin('https://', request.host), bangtsi,
-        ),
+        'bangtsi': 'https://{}{}'.format(request.host, bangtsi),
         'sikan': sikan,
     })
 
