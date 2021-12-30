@@ -22,6 +22,8 @@ from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
 from 臺灣言語工具.語音合成 import 台灣話口語講法
 import hashlib
 from os.path import isfile
+from urllib.parse import urlparse, urljoin
+from librosa.core.audio import get_duration
 
 
 def thak():
@@ -142,8 +144,9 @@ def line_tts():
     else:
         tongan_hethong, bangtsi = hapsing(request.args)
     sikan = get_duration(filename=tongan_hethong)
+    hostname = urlparse(request.base_url).hostname
     return JsonResponse({
-        'bangtsi': bangtsi,
+        'bangtsi': urljoin('https://', hostname, bangtsi),
         'sikan': sikan,
     })
 
