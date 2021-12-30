@@ -21,6 +21,7 @@ import stat
 from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
 from 臺灣言語工具.語音合成 import 台灣話口語講法
 import hashlib
+from os.path import isfile
 
 
 def thak():
