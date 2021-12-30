@@ -33,11 +33,17 @@
 
 ## Tshi
 ### Curl
+#### Get
+```bash
+time curl \
+  'localhost:5000/?taibun=Ta%CC%8Dk-ke%20ts%C3%B2-hu%C3%A9%20l%C3%A2i%20tshit-th%C3%B4%20!'
 ```
-curl -i -X POST \
+#### Post
+```
+time curl -i -X POST \
   -H "Content-type: application/x-www-form-urlencoded" \
   -H "Accept: text/plain" \
-  -d 'taibun=tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !' \
+  -d 'taibun=Ta̍k-ke tsò-hué lâi tshit-thô !' \
   localhost:5000
 ```
 ### Python3
@@ -45,7 +51,7 @@ curl -i -X POST \
 from http.client import HTTPConnection
 from urllib.parse import urlencode
 
-taiBun = 'tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !'
+taiBun = 'Ta̍k-ke tsò-hué lâi tshit-thô !'
 參數 = urlencode({
     'taibun': taiBun,
 })
