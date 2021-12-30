@@ -20,6 +20,7 @@ import stat
 
 from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
 from 臺灣言語工具.語音合成 import 台灣話口語講法
+import hashlib
 
 
 def thak():
@@ -120,27 +121,21 @@ app = Flask(__name__)
 
 
 @app.route("/", methods=('POST', 'GET'))
-def http_hapsing():
-    if request.method == 'POST':
-        return hapsing(request.form)
-    return hapsing(request.args)
-
-
 @app.route("/bangtsam", methods=('POST', 'GET'))
 def bangtsam_tts(request):
     if request.method == 'POST':
-        bangtsi = hapsing(request.POST)
+        _tongan_hethong, bangtsi = hapsing(request.form)
     else:
-        bangtsi = hapsing(request.GET)
+        _tongan_hethong, bangtsi = hapsing(request.args)
     return redirect(bangtsi)
 
 
-@app.route("/hapsing", methods=('POST', 'GET'))
+@app.route("/hapsing", methods=('POST'))
 def line_tts(request):
-    tsuliau = hapsing(request.POST)
-    sikan = get_duration(filename=tsuliau.siann.path)
+    tongan_hethong, bangtsi = hapsing(request.form)
+    sikan = get_duration(filename=tongan_hethong)
     return JsonResponse({
-        'bangtsi': tsuliau.mp3.url,
+        'bangtsi': bangtsi,
         'sikan': sikan,
     })
 
@@ -158,10 +153,10 @@ def hapsing(tshamsoo):
     if not isfile(imtong_sootsai):
         tsau(khaugitiau, imtong_sootsai)
 
-    response = redirect('/kiatko/{}'.format(
+    bangtsi = '/kiatko/{}'.format(
         quote(sootsai),
-    ))
-    return response
+    )
+    return imtong_sootsai, bangtsi
 
 
 def tsau(input_text, save_path):
