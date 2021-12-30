@@ -128,7 +128,10 @@ def bangtsam_tts():
         _tongan_hethong, bangtsi = hapsing(request.form)
     else:
         _tongan_hethong, bangtsi = hapsing(request.args)
-    return redirect(bangtsi)
+
+    huein = flask.Response()
+    huein.headers['X-Accel-Redirect'] = bangtsi
+    return huein
 
 
 @app.route("/hapsing", methods=['POST', 'GET'])
