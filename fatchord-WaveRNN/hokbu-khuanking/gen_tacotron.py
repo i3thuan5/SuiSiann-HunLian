@@ -12,7 +12,7 @@ import numpy as np
 import os
 
 
-from flask import Flask, request, Response
+from flask import Flask, request, Response, jsonify
 from os.path import join, basename
 from tempfile import mkstemp
 from urllib.parse import quote
@@ -145,7 +145,7 @@ def line_tts():
         tongan_hethong, bangtsi = hapsing(request.args)
     sikan = get_duration(filename=tongan_hethong)
     hostname = urlparse(request.base_url).hostname
-    return JsonResponse({
+    return jsonify({
         'bangtsi': urljoin('https://', hostname, bangtsi),
         'sikan': sikan,
     })
