@@ -24,6 +24,7 @@ import hashlib
 from os.path import isfile
 from urllib.parse import urlparse, urljoin
 from librosa.core.audio import get_duration
+import subprocess
 
 
 def thak():
@@ -159,13 +160,18 @@ def hapsing(tshamsoo):
         hunsu = tshamsoo['hunsu']
         句物件 = 拆文分析器.分詞句物件(hunsu)
     khaugitiau = 台灣話口語講法(句物件) + ' .'
-    sootsai = hashlib.sha256(khaugitiau.encode()).hexdigest() + '.wav'
-    imtong_sootsai = join('/kiatko', sootsai)
-    if not isfile(imtong_sootsai):
-        tsau(khaugitiau, imtong_sootsai)
+    sootsai_wav = hashlib.sha256(khaugitiau.encode()).hexdigest() + '.wav'
+    sootsai_mp3 = hashlib.sha256(khaugitiau.encode()).hexdigest() + '.mp3'
+    imtong_sootsai_wav = join('/kiatko', sootsai_wav)
+    imtong_sootsai_mp3 = join('/kiatko', sootsai_mp3)
+    if not isfile(imtong_sootsai_mp3):
+        tsau(khaugitiau, imtong_sootsai_wav)
+        subprocess.run([
+            'ffmpeg', '-y', '-i', imtong_sootsai_wav, imtong_sootsai_mp3
+        ], check=True)
 
     bangtsi = '/kiatko/{}'.format(
-        quote(sootsai),
+        quote(sootsai_mp3),
     )
     return imtong_sootsai, bangtsi
 
