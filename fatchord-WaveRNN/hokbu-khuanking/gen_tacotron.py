@@ -140,12 +140,13 @@ def bangtsam_tts():
 @app.route("/hapsing", methods=['POST', 'GET'])
 def line_tts():
     if request.method == 'POST':
-        tongan_hethong, bangtsi = hapsing(request.form)
+        tshamsoo = request.form
     else:
-        tongan_hethong, bangtsi = hapsing(request.args)
+        tshamsoo = request.args
+    tongan_hethong, _bangtsi = hapsing(tshamsoo)
     sikan = get_duration(filename=tongan_hethong)
     return jsonify({
-        'bangtsi': 'https://{}{}'.format(request.host, bangtsi),
+        'bangtsi': 'https://{}{}'.format(request.host, urlencode(tshamsoo)),
         'sikan': sikan,
     })
 
