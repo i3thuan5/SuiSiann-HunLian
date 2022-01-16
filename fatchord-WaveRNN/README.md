@@ -36,7 +36,7 @@
 #### Get
 ```bash
 time curl \
-  'localhost:5000/imtong.mp3?taibun=Ta%CC%8Dk-ke%20ts%C3%B2-hu%C3%A9%20l%C3%A2i%20tshit-th%C3%B4%20!'
+  'localhost:5000/taiuanue.wav?taibun=Ta%CC%8Dk-ke%20ts%C3%B2-hu%C3%A9%20l%C3%A2i%20tshit-th%C3%B4%20!'
 ```
 #### Post
 ```
@@ -44,7 +44,7 @@ time curl -i -X POST \
   -H "Content-type: application/x-www-form-urlencoded" \
   -H "Accept: text/plain" \
   -d 'taibun=Ta̍k-ke tsò-hué lâi tshit-thô !' \
-  localhost:5000/imtong.mp3
+  localhost:5000/taiuanue.wav
 ```
 ### Python3
 ```python

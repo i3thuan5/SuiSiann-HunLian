@@ -125,7 +125,7 @@ app = Flask(__name__)
 
 
 @app.route("/", methods=['POST', 'GET'])
-@app.route("/imtong.mp3", methods=['POST', 'GET'])
+@app.route("/taiuanue.wav", methods=['POST', 'GET'])
 @app.route("/bangtsam", methods=['POST', 'GET'])
 def bangtsam_tts():
     if request.method == 'POST':
@@ -148,7 +148,7 @@ def line_tts():
     tongan_ti_hethong_toh, _bangtsi = hapsing(tshamsoo)
     sikan = get_duration(filename=tongan_ti_hethong_toh)
     return jsonify({
-        'bangtsi': 'https://{}/imtong.mp3?{}'.format(
+        'bangtsi': 'https://{}/taiuanue.wav?{}'.format(
             request.host, urlencode(tshamsoo, quote_via=quote)),
         'sikan': sikan,
     })
