@@ -134,6 +134,7 @@ def bangtsam_tts():
         _tongan_ti_hethong_toh, bangtsi = hapsing(request.args)
 
     huein = Response()
+    huein.headers["Content-Type"] = "application/octet-stream"
     huein.headers["Content-Disposition"] = "attachment; filename=taiuanue.wav"
     huein.headers['X-Accel-Redirect'] = bangtsi
     return huein
