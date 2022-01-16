@@ -126,7 +126,7 @@ app = Flask(__name__)
 
 
 @app.route("/", methods=['POST', 'GET'])
-@app.route("/taiuanue.wav", methods=['POST', 'GET'])
+@app.route("/taiuanue.mp3", methods=['POST', 'GET'])
 @app.route("/bangtsam", methods=['POST', 'GET'])
 def bangtsam_tts():
     if request.method == 'POST':
@@ -136,7 +136,7 @@ def bangtsam_tts():
 
     huein = Response()
     huein.headers["Content-Type"] = "application/octet-stream"
-    huein.headers["Content-Disposition"] = "attachment; filename=taiuanue.wav"
+    huein.headers["Content-Disposition"] = "attachment; filename=taiuanue.mp3"
     huein.headers['X-Accel-Redirect'] = bangtsi
     return huein
 
@@ -150,7 +150,7 @@ def line_tts():
     tongan_ti_hethong_toh, _bangtsi = hapsing(tshamsoo)
     sikan = get_duration(filename=tongan_ti_hethong_toh)
     return jsonify({
-        'bangtsi': 'https://{}/taiuanue.wav?{}'.format(
+        'bangtsi': 'https://{}/taiuanue.mp3?{}'.format(
             request.host, urlencode(tshamsoo, quote_via=quote)),
         'sikan': sikan,
     })
