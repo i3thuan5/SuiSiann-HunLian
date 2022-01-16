@@ -24,6 +24,7 @@ import hashlib
 from os.path import isfile
 from urllib.parse import urlparse, urljoin
 from librosa.core.audio import get_duration
+from urllib.parse import urlencode
 
 
 def thak():
@@ -124,14 +125,16 @@ app = Flask(__name__)
 
 
 @app.route("/", methods=['POST', 'GET'])
+@app.route("/taiuanue.wav", methods=['POST', 'GET'])
 @app.route("/bangtsam", methods=['POST', 'GET'])
 def bangtsam_tts():
     if request.method == 'POST':
-        _tongan_hethong, bangtsi = hapsing(request.form)
+        _tongan_ti_hethong_toh, bangtsi = hapsing(request.form)
     else:
-        _tongan_hethong, bangtsi = hapsing(request.args)
+        _tongan_ti_hethong_toh, bangtsi = hapsing(request.args)
 
     huein = Response()
+    huein.headers["Content-Type"] = "application/octet-stream"
     huein.headers["Content-Disposition"] = "attachment; filename=taiuanue.wav"
     huein.headers['X-Accel-Redirect'] = bangtsi
     return huein
@@ -140,12 +143,14 @@ def bangtsam_tts():
 @app.route("/hapsing", methods=['POST', 'GET'])
 def line_tts():
     if request.method == 'POST':
-        tongan_hethong, bangtsi = hapsing(request.form)
+        tshamsoo = request.form
     else:
-        tongan_hethong, bangtsi = hapsing(request.args)
-    sikan = get_duration(filename=tongan_hethong)
+        tshamsoo = request.args
+    tongan_ti_hethong_toh, _bangtsi = hapsing(tshamsoo)
+    sikan = get_duration(filename=tongan_ti_hethong_toh)
     return jsonify({
-        'bangtsi': 'https://{}{}'.format(request.host, bangtsi),
+        'bangtsi': 'https://{}/taiuanue.wav?{}'.format(
+            request.host, urlencode(tshamsoo, quote_via=quote)),
         'sikan': sikan,
     })
 
