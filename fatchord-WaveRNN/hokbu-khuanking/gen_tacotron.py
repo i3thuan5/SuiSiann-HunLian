@@ -25,6 +25,7 @@ from os.path import isfile
 from urllib.parse import urlparse, urljoin
 from librosa.core.audio import get_duration
 import subprocess
+from urllib.parse import urlencode
 
 
 def thak():
@@ -125,6 +126,7 @@ app = Flask(__name__)
 
 
 @app.route("/", methods=['POST', 'GET'])
+@app.route("/taiuanue.wav", methods=['POST', 'GET'])
 @app.route("/bangtsam", methods=['POST', 'GET'])
 def bangtsam_tts():
     if request.method == 'POST':
@@ -133,6 +135,7 @@ def bangtsam_tts():
         _tongan_ti_hethong_toh, bangtsi = hapsing(request.args)
 
     huein = Response()
+    huein.headers["Content-Type"] = "application/octet-stream"
     huein.headers["Content-Disposition"] = "attachment; filename=taiuanue.wav"
     huein.headers['X-Accel-Redirect'] = bangtsi
     return huein
@@ -147,7 +150,8 @@ def line_tts():
     tongan_ti_hethong_toh, _bangtsi = hapsing(tshamsoo)
     sikan = get_duration(filename=tongan_ti_hethong_toh)
     return jsonify({
-        'bangtsi': 'https://{}{}'.format(request.host, urlencode(tshamsoo)),
+        'bangtsi': 'https://{}/taiuanue.wav?{}'.format(
+            request.host, urlencode(tshamsoo, quote_via=quote)),
         'sikan': sikan,
     })
 
