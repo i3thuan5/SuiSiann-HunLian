@@ -12,6 +12,21 @@ import numpy as np
 import os
 
 
+from flask import Flask, request, Response, jsonify
+from os.path import join, basename
+from tempfile import mkstemp
+from urllib.parse import quote
+import stat
+
+from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
+from 臺灣言語工具.語音合成 import 台灣話口語講法
+import hashlib
+from os.path import isfile
+from urllib.parse import urlparse, urljoin
+from librosa.core.audio import get_duration
+from urllib.parse import urlencode
+
+
 def thak():
     class Tshamsoo():
         force_cpu = os.getenv('FORCE_CPU', False)
@@ -23,7 +38,7 @@ def thak():
         tts_weights = None
         save_attn = os.getenv('SAVE_ATTN', False)
         voc_weights = None
-
+        iters = os.getenv('GL_ITERS', 32)
 
     args = Tshamsoo()
     if args.vocoder in ['griffinlim', 'gl']:
@@ -34,18 +49,6 @@ def thak():
         raise argparse.ArgumentError('Must provide a valid vocoder type!')
 
     hp.configure(args.hp_file)  # Load hparams from file
-    # set defaults for any arguments that depend on hparams
-    if args.vocoder == 'wavernn':
-        if args.target is None:
-            args.target = hp.voc_target
-        if args.overlap is None:
-            args.overlap = hp.voc_overlap
-        if args.batched is None:
-            args.batched = hp.voc_gen_batched
-
-        batched = args.batched
-        target = int(args.target)
-        overlap = int(args.overlap)
 
     tts_weights = args.tts_weights
     save_attn = args.save_attn
@@ -59,6 +62,18 @@ def thak():
     print('Using device:', device)
 
     if args.vocoder == 'wavernn':
+        # set defaults for any arguments that depend on hparams
+        if args.target is None:
+            args.target = hp.voc_target
+        if args.overlap is None:
+            args.overlap = hp.voc_overlap
+        if args.batched is None:
+            args.batched = hp.voc_gen_batched
+
+        batched = args.batched
+        target = int(args.target)
+        overlap = int(args.overlap)
+
         print('\nInitialising WaveRNN Model...\n')
         # Instantiate WaveRNN Model
         voc_model = WaveRNN(rnn_dims=hp.voc_rnn_dims,
@@ -76,6 +91,11 @@ def thak():
 
         voc_load_path = args.voc_weights if args.voc_weights else paths.voc_latest_weights
         voc_model.load(voc_load_path)
+    else:
+        voc_model = None
+        batched = None
+        target = None
+        overlap = None
 
     print('\nInitialising Tacotron Model...\n')
 
@@ -101,25 +121,58 @@ def thak():
 
 args, voc_model, tts_model, batched, target, overlap, save_attn = thak()
 
-from flask import Flask, request
-from os.path import join, basename
-from tempfile import mkstemp
-
 app = Flask(__name__)
 
 
-@app.route("/", methods=('POST',))
-def hapsing():
-    taibun = request.form['taibun']
+@app.route("/", methods=['POST', 'GET'])
+@app.route("/taiuanue.wav", methods=['POST', 'GET'])
+@app.route("/bangtsam", methods=['POST', 'GET'])
+def bangtsam_tts():
+    if request.method == 'POST':
+        _tongan_ti_hethong_toh, bangtsi = hapsing(request.form)
+    else:
+        _tongan_ti_hethong_toh, bangtsi = hapsing(request.args)
+
+    huein = Response()
+    huein.headers["Content-Type"] = "application/octet-stream"
+    huein.headers["Content-Disposition"] = "attachment; filename=taiuanue.wav"
+    huein.headers['X-Accel-Redirect'] = bangtsi
+    return huein
+
+
+@app.route("/hapsing", methods=['POST', 'GET'])
+def line_tts():
+    if request.method == 'POST':
+        tshamsoo = request.form
+    else:
+        tshamsoo = request.args
+    tongan_ti_hethong_toh, _bangtsi = hapsing(tshamsoo)
+    sikan = get_duration(filename=tongan_ti_hethong_toh)
+    return jsonify({
+        'bangtsi': 'https://{}/taiuanue.wav?{}'.format(
+            request.host, urlencode(tshamsoo, quote_via=quote)),
+        'sikan': sikan,
+    })
+
+
+def hapsing(tshamsoo):
     try:
-        sootsai = request.form['sootsai']
-        imtong_sootsai = join('/kiatko', sootsai)
+        taibun = tshamsoo['taibun']
+        句物件 = 拆文分析器.對齊句物件(taibun, taibun)
     except KeyError:
-        tongan_id, imtong_sootsai = mkstemp(dir='/kiatko', suffix='.wav')
-        os.close(tongan_id)
-        sootsai = basename(imtong_sootsai)
-    tsau(taibun, imtong_sootsai)
-    return sootsai
+        hunsu = tshamsoo['hunsu']
+        句物件 = 拆文分析器.分詞句物件(hunsu)
+    khaugitiau = 台灣話口語講法(句物件) + ' .'
+    sootsai = hashlib.sha256(khaugitiau.encode()).hexdigest() + '.wav'
+    imtong_sootsai = join('/kiatko', sootsai)
+    if not isfile(imtong_sootsai):
+        tsau(khaugitiau, imtong_sootsai)
+
+    bangtsi = '/kiatko/{}'.format(
+        quote(sootsai),
+    )
+    return imtong_sootsai, bangtsi
+
 
 def tsau(input_text, save_path):
     if input_text:
