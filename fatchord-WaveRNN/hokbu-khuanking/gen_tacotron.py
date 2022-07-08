@@ -24,6 +24,7 @@ import hashlib
 from os.path import isfile
 from urllib.parse import urlparse, urljoin
 from librosa.core.audio import get_duration
+import subprocess
 from urllib.parse import urlencode
 
 
@@ -125,7 +126,7 @@ app = Flask(__name__)
 
 
 @app.route("/", methods=['POST', 'GET'])
-@app.route("/taiuanue.wav", methods=['POST', 'GET'])
+@app.route("/taiuanue.mp3", methods=['POST', 'GET'])
 @app.route("/bangtsam", methods=['POST', 'GET'])
 def bangtsam_tts():
     if request.method == 'POST':
@@ -135,7 +136,7 @@ def bangtsam_tts():
 
     huein = Response()
     huein.headers["Content-Type"] = "application/octet-stream"
-    huein.headers["Content-Disposition"] = "attachment; filename=taiuanue.wav"
+    huein.headers["Content-Disposition"] = "attachment; filename=taiuanue.mp3"
     huein.headers['X-Accel-Redirect'] = bangtsi
     return huein
 
@@ -149,7 +150,7 @@ def line_tts():
     tongan_ti_hethong_toh, _bangtsi = hapsing(tshamsoo)
     sikan = get_duration(filename=tongan_ti_hethong_toh)
     return jsonify({
-        'bangtsi': 'https://{}/taiuanue.wav?{}'.format(
+        'bangtsi': 'https://{}/taiuanue.mp3?{}'.format(
             request.host, urlencode(tshamsoo, quote_via=quote)),
         'sikan': sikan,
     })
@@ -163,15 +164,20 @@ def hapsing(tshamsoo):
         hunsu = tshamsoo['hunsu']
         句物件 = 拆文分析器.分詞句物件(hunsu)
     khaugitiau = 台灣話口語講法(句物件) + ' .'
-    sootsai = hashlib.sha256(khaugitiau.encode()).hexdigest() + '.wav'
-    imtong_sootsai = join('/kiatko', sootsai)
-    if not isfile(imtong_sootsai):
-        tsau(khaugitiau, imtong_sootsai)
+    sootsai_wav = hashlib.sha256(khaugitiau.encode()).hexdigest() + '.wav'
+    sootsai_mp3 = hashlib.sha256(khaugitiau.encode()).hexdigest() + '.mp3'
+    imtong_sootsai_wav = join('/kiatko', sootsai_wav)
+    imtong_sootsai_mp3 = join('/kiatko', sootsai_mp3)
+    if not isfile(imtong_sootsai_mp3):
+        tsau(khaugitiau, imtong_sootsai_wav)
+        subprocess.run([
+            'ffmpeg', '-y', '-i', imtong_sootsai_wav, imtong_sootsai_mp3
+        ], check=True)
 
     bangtsi = '/kiatko/{}'.format(
-        quote(sootsai),
+        quote(sootsai_mp3),
     )
-    return imtong_sootsai, bangtsi
+    return imtong_sootsai_mp3, bangtsi
 
 
 def tsau(input_text, save_path):
