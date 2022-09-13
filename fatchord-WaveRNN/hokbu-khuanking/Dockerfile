@@ -17,5 +17,8 @@ COPY gen_tacotron.py suisiann.py
 CMD gunicorn \
   -b 0.0.0.0:5000 \
   --timeout 60 \
+  --workers 7 \
+  --max-requests 30 \
+  --max-requests-jitter 10 \
   --log-level debug \
   suisiann:app
