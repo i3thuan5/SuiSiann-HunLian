@@ -36,11 +36,11 @@ services:
       - "./0.2.1-checkpoints:/WaveRNN/checkpoints"
       - "./6-kiatko:/kiatko"
     healthcheck:
-      test: nvidia-smi
-      interval: 10s
-      retries: 2
+      test: nvidia-smi || exit 1
       start_period: 60s
+      interval: 20s
       timeout: 10s
+      retries: 2
     restart: always
 
 networks:
