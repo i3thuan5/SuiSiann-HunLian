@@ -26,8 +26,10 @@ services:
       - DEVICE=${DEVICE:-gpu}
       - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-all}
       - VOCODER=${VOCODER:-wavernn}
+      - BATCHED=${BATCHED:-batched}
       - TARGET=${TARGET:-2000}
       - OVERLAP=${OVERLAP:-400}
+      - GL_ITERS=${GL_ITERS:-32}
     volumes:
       - "./tshamsoo/hparams.py:/WaveRNN/hparams.py:ro"
       - "./tshamsoo/text_init.py:/WaveRNN/utils/text/__init__.py:ro"

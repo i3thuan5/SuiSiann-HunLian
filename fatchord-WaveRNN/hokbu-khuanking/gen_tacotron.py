@@ -33,7 +33,7 @@ def thak():
         device = os.getenv('DEVICE', 'gpu')
         hp_file = 'hparams.py'
         vocoder = os.getenv('VOCODER', 'wavernn')
-        batched = os.getenv('BATCHED', True)
+        batched = os.getenv('BATCHED', 'batched') == 'batched'
         target = os.getenv('TARGET', None)
         overlap = os.getenv('OVERLAP', None)
         tts_weights = None
