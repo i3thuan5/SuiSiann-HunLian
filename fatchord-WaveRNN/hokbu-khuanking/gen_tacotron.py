@@ -30,7 +30,7 @@ from urllib.parse import urlencode
 
 def thak():
     class Tshamsoo():
-        force_cpu = os.getenv('FORCE_CPU', False)
+        device = os.getenv('DEVICE', 'gpu')
         hp_file = 'hparams.py'
         vocoder = os.getenv('VOCODER', 'wavernn')
         batched = os.getenv('BATCHED', True)
@@ -56,7 +56,7 @@ def thak():
 
     paths = Paths(hp.data_path, hp.voc_model_id, hp.tts_model_id)
 
-    if not args.force_cpu and torch.cuda.is_available():
+    if args.device == 'gpu' and torch.cuda.is_available():
         device = torch.device('cuda')
     else:
         device = torch.device('cpu')
