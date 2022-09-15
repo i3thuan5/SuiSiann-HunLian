@@ -185,7 +185,7 @@ job=huatsiann-job:
   - KU={env.KU:to規-guân規 bûn規-huà本 beh再 siū規 lâng規 khíng規-tīng本.}
 #  - KU={env.KU:ta̍k規-ke規 tsò規-hué規 lâi規 tshit規-thô本!}
   - PANPUN={env.PANPUN}
-  - CUDA_VISIBLE_DEVICES=0
+  - CUDA_VISIBLE_DEVICES={env.CUDA_VISIBLE_DEVICES:0}
   command: |
     bash -eux -c '
       cp /tshamsoo/hparams.py .
