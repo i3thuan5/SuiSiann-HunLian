@@ -24,7 +24,7 @@ services:
               capabilities: [gpu]
     environment:
       - DEVICE=${DEVICE:-gpu}
-      - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-all}
+      - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}
       - VOCODER=${VOCODER:-wavernn}
       - BATCHED=${BATCHED:-batched}
       - TARGET=${TARGET:-2000}
