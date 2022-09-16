@@ -23,6 +23,10 @@ services:
               count: all
               capabilities: [gpu]
     environment:
+      - GUNICORN_TIMEOUT=${GUNICORN_TIMEOUT:-60}
+      - GUNICORN_WORKERS=${GUNICORN_WORKERS:-6}
+      - GUNICORN_MAX_REQUESTS=${GUNICORN_MAX_REQUESTS:-30}
+      - GUNICORN_MAX_REQUESTS_JITTER=${GUNICORN_MAX_REQUESTS_JITTER:-10}
       - DEVICE=${DEVICE:-gpu}
       - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}
       - VOCODER=${VOCODER:-wavernn}
