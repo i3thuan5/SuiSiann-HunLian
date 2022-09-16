@@ -42,11 +42,19 @@ services:
       - "./6-kiatko:/kiatko"
     healthcheck:
       test: ["CMD-SHELL", "test -s `which nvidia-smi` && nvidia-smi || exit 1"]
-      start_period: 60s
+      start_period: 1s
       interval: 20s
-      timeout: 10s
+      timeout: 5s
       retries: 2
+    labels:
+      - autoheal=true
     restart: always
+  autohealg:
+    image: willfarrell/autoheal
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
 networks:
   nginx-bridge:
