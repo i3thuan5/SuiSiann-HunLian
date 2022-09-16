@@ -48,6 +48,7 @@ services:
       retries: 2
     labels:
       - autoheal=true
+      - autoheal.stop.timeout=1
     restart: always
   autoheal:
     image: willfarrell/autoheal
