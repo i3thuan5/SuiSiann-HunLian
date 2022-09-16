@@ -41,7 +41,7 @@ services:
       - "./0.2.1-checkpoints:/WaveRNN/checkpoints"
       - "./6-kiatko:/kiatko"
     healthcheck:
-      test: nvidia-smi || exit 1
+      test: ["CMD-SHELL", "test -s /usr/bin/nvidia-smi"]
       start_period: 60s
       interval: 20s
       timeout: 10s
