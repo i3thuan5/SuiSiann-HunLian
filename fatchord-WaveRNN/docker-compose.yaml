@@ -49,7 +49,7 @@ services:
     labels:
       - autoheal=true
     restart: always
-  autohealg:
+  autoheal:
     image: willfarrell/autoheal
     environment:
       - AUTOHEAL_CONTAINER_LABEL=all
