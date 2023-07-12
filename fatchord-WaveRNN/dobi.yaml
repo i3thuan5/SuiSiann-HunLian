@@ -8,7 +8,7 @@ meta:
 
 env=siatting:
   variables:
-  - PANPUN=0.2.1
+  - PANPUN=1.0
   - BANGTSI=https://www.dropbox.com/s/rye2sd0wo718bj5/SuiSiann-0.2.1.tar?dl=0
   - PINLUT=16k
 
@@ -182,17 +182,18 @@ job=wavernn-job:
 job=huatsiann-job:
   use: hunlian-khuanking
   env:
-  - KU={env.KU:tak10-ke7 tsə2-hue1 lai7 tsʰit8-tʰə5 !}
+  - KU={env.KU:to規-guân規 bûn規-huà本 beh再 siū規 lâng規 khíng規-tīng本.}
+#  - KU={env.KU:ta̍k規-ke規 tsò規-hué規 lâi規 tshit規-thô本!}
   - PANPUN={env.PANPUN}
-  - CUDA_VISIBLE_DEVICES=1
+  - CUDA_VISIBLE_DEVICES={env.CUDA_VISIBLE_DEVICES:0}
   command: |
     bash -eux -c '
       cp /tshamsoo/hparams.py .
       cp /tshamsoo/text_init.py utils/text/__init__.py
       cp /tshamsoo/text_symbols.py utils/text/symbols.py
       sed -i "s/required=True, //g" gen_tacotron.py
-      time python gen_tacotron.py --input_text "$KU" griffinlim
-      time python gen_tacotron.py --input_text "$KU" wavernn
-      time python gen_tacotron.py --input_text "$KU" wavernn --unbatched
+      time python gen_tacotron.py --input_text "$KU" --save_attention griffinlim
+      time python gen_tacotron.py --input_text "$KU" --save_attention wavernn
+      time python gen_tacotron.py --input_text "$KU" --save_attention wavernn --unbatched
     '
   mounts: [tshamsoo, checkpoints, outputs, ]
