@@ -14,7 +14,7 @@ services:
       - LETSENCRYPT_EMAIL=ithuan@ithuan.tw
     restart: always
   hapsing:
-    build: ./hokbu-khuanking
+    image: ithuan/suisiann-wavernn:diong-20230113
     deploy:
       resources:
         reservations:
