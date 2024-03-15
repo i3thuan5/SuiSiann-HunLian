@@ -1,12 +1,11 @@
 FROM pytorch/pytorch:1.12.1-cuda11.3-cudnn8-runtime
 
-COPY requirements.in ./
+RUN apt-get update && \
+  apt-get install -y git \
+    libsndfile1 ffmpeg # librosa output, tsuan mp3
+
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
-
-RUN apt-get update && \
-  apt-get install -y git vim-tiny \
-    libsndfile1 ffmpeg # librosa output, tsuan mp3
 
 RUN git clone https://github.com/i3thuan5/WaveRNN.git /WaveRNN
 WORKDIR /WaveRNN
