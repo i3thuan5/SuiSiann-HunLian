@@ -1,3 +1,4 @@
+---
 version: '3.7'
 
 services:
@@ -9,12 +10,12 @@ services:
       - default
       - nginx-bridge
     environment:
-      - VIRTUAL_HOST=hapsing.ithuan.tw
-      - LETSENCRYPT_HOST=hapsing.ithuan.tw
+      - VIRTUAL_HOST=${VIRTUAL_HOST:-hapsing.ithuan.tw}
+      - LETSENCRYPT_HOST=${VIRTUAL_HOST:-hapsing.ithuan.tw}
       - LETSENCRYPT_EMAIL=ithuan@ithuan.tw
     restart: always
   hapsing:
-    build: ./hokbu-khuanking
+    image: ithuan/suisiann-wavernn:diong-20230113
     deploy:
       resources:
         reservations:

@@ -1,0 +1,61 @@
+---
+os: linux
+dist: jammy
+services:
+  - docker
+language: python
+python:
+  - '3.10'
+branches:
+  only:
+    - master
+before_install:
+  - pip install --upgrade pip setuptools
+jobs:
+  include:
+    - name: Check YAML format
+      install:
+        - pip install tox
+      script:
+        - tox -e yamllint
+    - name: flake8
+      install:
+        - pip install tox
+      script:
+        - tox -e flake8
+    - name: pymarkdown
+      install:
+        - pip install tox
+      script:
+        - tox -e pymarkdown
+    # - stage: tsinghap
+    - name: docker-compose tsiunnsuann
+      service:
+        - docker
+      before_script:
+        - cd fatchord-WaveRNN/
+        - export VIRTUAL_HOST=localhost
+        - export DEVICE=cpu
+        - export GUNICORN_WORKERS=1
+        - wget https://tongan-puntiunn.ithuan.tw/SuiSiann-HunLian/0.2.1-checkpoints.tgz
+        - tar -xzvf 0.2.1-checkpoints.tgz
+      script:
+        # 設定ZuGi
+        - git clone --depth 1 https://github.com/i3thuan5/ZuGi.git
+        - docker-compose -f ZuGi/docker-compose.yml up -d --build nginx-proxy
+        # 試docker-compose
+        - sed '/deploy/,+6d' -i docker-compose.yaml
+        - docker-compose up -d
+        - sleep 1
+        - BANGTSI=http://localhost/bangtsam?taibun=ta%CC%8Dk-ke%20ts%C3%B2-hu%C3%A9%20l%C3%A2i%20tshit-th%C3%B4!
+        - time curl -L "$BANGTSI" --output siann.mp3
+        - file siann.mp3 | tee siann.type.txt
+        - cat siann.type.txt | grep 16
+        - time curl -L "$BANGTSI" --output /dev/null
+        - time curl -L "$BANGTSI" --output /dev/null
+        - curl --max-time 1 -L "$BANGTSI" --output siann.mp3
+      after_failure:
+        - docker-compose -f ZuGi/docker-compose.yml logs
+        - docker-compose logs
+        - cat siann.type.txt
+        - cat siann.mp3
