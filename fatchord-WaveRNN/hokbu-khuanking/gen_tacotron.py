@@ -13,16 +13,13 @@ import os
 
 
 from flask import Flask, request, Response, jsonify
-from os.path import join, basename
-from tempfile import mkstemp
+from os.path import join
 from urllib.parse import quote
-import stat
 
 from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
 from 臺灣言語工具.語音合成 import 台灣話口語講法
 import hashlib
 from os.path import isfile
-from urllib.parse import urlparse, urljoin
 from librosa.core.audio import get_duration
 import subprocess
 from urllib.parse import urlencode
@@ -185,26 +182,30 @@ def tsau(input_text, save_path):
         inputs = [text_to_sequence(input_text.strip(), hp.tts_cleaner_names)]
     else:
         with open('sentences.txt') as f:
-            inputs = [text_to_sequence(l.strip(), hp.tts_cleaner_names) for l in f]
+            inputs = [text_to_sequence(line.strip(), hp.tts_cleaner_names) for line in f]
 
     if args.vocoder == 'wavernn':
         voc_k = voc_model.get_step() // 1000
         tts_k = tts_model.get_step() // 1000
 
-        simple_table([('Tacotron', str(tts_k) + 'k'),
-                    ('r', tts_model.r),
-                    ('Vocoder Type', 'WaveRNN'),
-                    ('WaveRNN', str(voc_k) + 'k'),
-                    ('Generation Mode', 'Batched' if batched else 'Unbatched'),
-                    ('Target Samples', target if batched else 'N/A'),
-                    ('Overlap Samples', overlap if batched else 'N/A')])
+        simple_table([
+            ('Tacotron', str(tts_k) + 'k'),
+            ('r', tts_model.r),
+            ('Vocoder Type', 'WaveRNN'),
+            ('WaveRNN', str(voc_k) + 'k'),
+            ('Generation Mode', 'Batched' if batched else 'Unbatched'),
+            ('Target Samples', target if batched else 'N/A'),
+            ('Overlap Samples', overlap if batched else 'N/A'),
+        ])
 
     elif args.vocoder == 'griffinlim':
         tts_k = tts_model.get_step() // 1000
-        simple_table([('Tacotron', str(tts_k) + 'k'),
-                    ('r', tts_model.r),
-                    ('Vocoder Type', 'Griffin-Lim'),
-                    ('GL Iters', args.iters)])
+        simple_table([
+            ('Tacotron', str(tts_k) + 'k'),
+            ('r', tts_model.r),
+            ('Vocoder Type', 'Griffin-Lim'),
+            ('GL Iters', args.iters),
+        ])
 
     for i, x in enumerate(inputs, 1):
 
@@ -214,14 +215,8 @@ def tsau(input_text, save_path):
         m = (m + 4) / 8
         np.clip(m, 0, 1, out=m)
 
-        if args.vocoder == 'griffinlim':
-            v_type = args.vocoder
-        elif args.vocoder == 'wavernn' and args.batched:
-            v_type = 'wavernn_batched'
-        else:
-            v_type = 'wavernn_unbatched'
-
-        if save_attn: save_attention(attention, save_path)
+        if save_attn:
+            save_attention(attention, save_path)
 
         if args.vocoder == 'wavernn':
             m = torch.tensor(m).unsqueeze(0)
