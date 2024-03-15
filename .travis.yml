@@ -34,12 +34,13 @@ jobs:
         - docker
       before_script:
         - cd fatchord-WaveRNN/
+        - export VIRTUAL_HOST=localhost
+        - export DEVICE=cpu
       script:
         # 試container配docker-compose辨識
         - git clone --depth 1 https://github.com/i3thuan5/ZuGi.git
         - docker-compose -f ZuGi/docker-compose.yml up -d --build nginx-proxy
         # 試container配docker-compose辨識
-        - export VIRTUAL_HOST=localhost
         - sed '/deploy/,+6d' -i docker-compose.yaml
         - docker-compose up -d
         - sleep 1
