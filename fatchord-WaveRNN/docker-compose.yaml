@@ -10,8 +10,8 @@ services:
       - default
       - nginx-bridge
     environment:
-      - VIRTUAL_HOST=hapsing.ithuan.tw
-      - LETSENCRYPT_HOST=hapsing.ithuan.tw
+      - VIRTUAL_HOST=${VIRTUAL_HOST:-hapsing.ithuan.tw}
+      - LETSENCRYPT_HOST=${VIRTUAL_HOST:-hapsing.ithuan.tw}
       - LETSENCRYPT_EMAIL=ithuan@ithuan.tw
     restart: always
   hapsing:
