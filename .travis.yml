@@ -36,11 +36,14 @@ jobs:
         - cd fatchord-WaveRNN/
         - export VIRTUAL_HOST=localhost
         - export DEVICE=cpu
+        - export GUNICORN_WORKERS=1
+        - wget https://tongan-puntiunn.ithuan.tw/SuiSiann-HunLian/0.2.1-checkpoints.tgz
+        - tar -xzvf 0.2.1-checkpoints.tgz
       script:
-        # 試container配docker-compose辨識
+        # 設定ZuGi
         - git clone --depth 1 https://github.com/i3thuan5/ZuGi.git
         - docker-compose -f ZuGi/docker-compose.yml up -d --build nginx-proxy
-        # 試container配docker-compose辨識
+        # 試docker-compose
         - sed '/deploy/,+6d' -i docker-compose.yaml
         - docker-compose up -d
         - sleep 1
