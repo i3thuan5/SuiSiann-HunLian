@@ -39,6 +39,7 @@ jobs:
         # 試container配docker-compose辨識
         - cd fatchord-WaveRNN/
         - export VIRTUAL_HOST=localhost
+        - sed '/driver/,+2d' -i docker-compose.yaml
         - docker-compose up -d
         - sleep 1
         - BANGTSI=http://localhost/bangtsam?taibun=ta%CC%8Dk-ke%20ts%C3%B2-hu%C3%A9%20l%C3%A2i%20tshit-th%C3%B4!
