@@ -1,0 +1,11 @@
+numpy==1.16.2
+librosa
+soundfile
+matplotlib
+unidecode
+inflect
+nltk
+
+tai5-uan5_gian5-gi2_kang1-ku7
+flask
+gunicorn
