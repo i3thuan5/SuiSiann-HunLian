@@ -32,12 +32,13 @@ jobs:
     - name: docker-compose tsiunnsuann
       service:
         - docker
+      before_script:
+        - cd fatchord-WaveRNN/
       script:
         # 試container配docker-compose辨識
         - git clone --depth 1 https://github.com/i3thuan5/ZuGi.git
         - docker-compose -f ZuGi/docker-compose.yml up -d --build nginx-proxy
         # 試container配docker-compose辨識
-        - cd fatchord-WaveRNN/
         - export VIRTUAL_HOST=localhost
         - sed '/deploy/,+6d' -i docker-compose.yaml
         - docker-compose up -d
@@ -50,5 +51,7 @@ jobs:
         - time curl -L "$BANGTSI" --output siann.mp3
         - curl --max-time 1 -L "$BANGTSI" --output siann.mp3
       after_failure:
+        - docker-compose -f ZuGi/docker-compose.yml logs
         - docker-compose logs
         - cat siann.type.txt
+        - cat siann.mp3
