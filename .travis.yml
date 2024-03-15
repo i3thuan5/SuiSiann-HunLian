@@ -43,7 +43,9 @@ jobs:
         - docker-compose up -d
         - sleep 1
         - BANGTSI=http://localhost/bangtsam?taibun=ta%CC%8Dk-ke%20ts%C3%B2-hu%C3%A9%20l%C3%A2i%20tshit-th%C3%B4!
-        - time curl "$BANGTSI" --output siann.wav
-        - file siann.wav
-        - time curl "$BANGTSI" --output siann.wav
-        - curl --max-time 1 "$BANGTSI" --output siann.wav
+        - time curl -L "$BANGTSI" --output siann.mp3
+        - file siann.mp3 | tee siann.type.txt
+        - cat siann.type.txt | grep 16
+        - time curl -L "$BANGTSI" --output siann.mp3
+        - time curl -L "$BANGTSI" --output siann.mp3
+        - curl --max-time 1 -L "$BANGTSI" --output siann.mp3
