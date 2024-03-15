@@ -1,6 +1,5 @@
 import argparse
 from csv import DictReader
-import glob
 from multiprocessing import Pool, cpu_count
 from os.path import splitext, basename
 from pathlib import Path
@@ -15,8 +14,6 @@ from utils.paths import Paths
 
 
 from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
-from 臺灣言語工具.音標系統.閩南語.臺灣閩南語羅馬字拼音 import 臺灣閩南語羅馬字拼音
-from 臺灣言語工具.語音合成.閩南語音韻規則 import 閩南語音韻規則
 from 臺灣言語工具.語音合成 import 台灣話口語講法
 
 
@@ -137,7 +134,9 @@ else:
     pool = Pool(processes=n_workers)
     dataset = []
 
-    for i, (item_id, length) in enumerate(pool.imap_unordered(process_wav, wav_files), 1):
+    for i, (item_id, length) in enumerate(
+        pool.imap_unordered(process_wav, wav_files), 1
+    ):
         dataset += [(item_id, length)]
         bar = progbar(i, len(wav_files))
         message = f'{bar} {i}/{len(wav_files)} '
@@ -146,4 +145,8 @@ else:
     with open(paths.data / 'dataset.pkl', 'wb') as f:
         pickle.dump(dataset, f)
 
-    print('\n\nCompleted. Ready to run "python train_tacotron.py" or "python train_wavernn.py". \n')
+    print(
+        '\n\nCompleted. '
+        'Ready to run "python train_tacotron.py"'
+        ' or "python train_wavernn.py". \n'
+    )
