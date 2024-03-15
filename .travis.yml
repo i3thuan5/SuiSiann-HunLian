@@ -49,3 +49,6 @@ jobs:
         - time curl -L "$BANGTSI" --output siann.mp3
         - time curl -L "$BANGTSI" --output siann.mp3
         - curl --max-time 1 -L "$BANGTSI" --output siann.mp3
+      after_failure:
+        - docker-compose logs
+        - cat siann.type.txt
