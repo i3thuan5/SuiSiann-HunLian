@@ -2,10 +2,8 @@
 version: '3.7'
 
 services:
-  nginx:
-    build: ./hokbu-nginx/
-    volumes:
-      - "./6-kiatko:/kiatko:ro"
+  nginx-cache:
+    build: ./nginx-cache/
     networks:
       - default
       - nginx-bridge
@@ -14,8 +12,18 @@ services:
       - LETSENCRYPT_HOST=${VIRTUAL_HOST:-hapsing.ithuan.tw}
       - LETSENCRYPT_EMAIL=ithuan@ithuan.tw
     restart: always
+  hokbu-nginx:
+    build: ./hokbu-nginx/
+    networks:
+      - default
+      - hokbu-bridge
+    volumes:
+      - "./6-kiatko:/kiatko:ro"
+    restart: always
   hapsing:
     build: ./hokbu-khuanking/
+    networks:
+      - hokbu-bridge
     deploy:
       resources:
         reservations:
@@ -63,8 +71,9 @@ services:
     image: alpine:3
     volumes:
       - "./6-kiatko:/kiatko"
-      - "thai-khuanking/15min:/etc/periodic/15min/:ro"
+      - "./thai-khuanking/15min:/etc/periodic/15min/:ro"
 
 networks:
   nginx-bridge:
     external: true
+  hokbu-bridge:
