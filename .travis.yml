@@ -56,7 +56,7 @@ jobs:
         - time curl -L "$BANGTSI" -I
         - time curl -L "$BANGTSI" -I
         - curl --max-time 1 -L "$BANGTSI" -I
-        - sudo rm -rf '6-kiatko/*'
+        - docker-compose exec hapsing find /kiatko/ -type f -delete
         - curl --max-time 1 -L "$BANGTSI" -I
         - "curl --max-time 1 -L \"$BANGTSI\" -H 'range: bytes=0-' -I"
       after_failure:

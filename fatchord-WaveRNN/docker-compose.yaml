@@ -22,7 +22,7 @@ services:
       - hokbu-bridge
     volumes:
       - "./hokbu-nginx/default.conf:/etc/nginx/conf.d/default.conf:ro"
-      - "./6-kiatko:/kiatko:ro"
+      - "hapsing_limsi_data:/kiatko:ro"
     restart: always
   hapsing:
     build: ./hokbu-khuanking/
@@ -53,7 +53,7 @@ services:
       - "./tshamsoo/text_init.py:/WaveRNN/utils/text/__init__.py:ro"
       - "./tshamsoo/text_symbols.py:/WaveRNN/utils/text/symbols.py:ro"
       - "./0.2.1-checkpoints:/WaveRNN/checkpoints"
-      - "./6-kiatko:/kiatko"
+      - "hapsing_limsi_data:/kiatko"
     healthcheck:
       test: ["CMD-SHELL", "test -s `which nvidia-smi` && nvidia-smi || exit 1"]
       start_period: 1s
@@ -74,12 +74,13 @@ services:
   thai-imtong:
     image: alpine:3
     volumes:
-      - "./6-kiatko:/kiatko"
+      - "hapsing_limsi_data:/kiatko"
       - "./thai-khuanking/15min:/etc/periodic/15min/:ro"
     command: crond -f -l 0 -L -
 
 volumes:
   nginx_cache_data:
+  hapsing_limsi_data:
 
 networks:
   nginx-bridge:
