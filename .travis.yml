@@ -55,6 +55,8 @@ jobs:
         - time curl -L "$BANGTSI" --output /dev/null
         - time curl -L "$BANGTSI" --output /dev/null
         - curl --max-time 1 -L "$BANGTSI" --output siann.mp3
+        - rm 6-kiatko/*
+        - curl --max-time 1 -L "$BANGTSI" --output siann.mp3
       after_failure:
         - docker-compose -f ZuGi/docker-compose.yml logs
         - docker-compose logs
