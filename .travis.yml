@@ -26,20 +26,6 @@ jobs:
         - pip install tox
       script:
         - tox -e pymarkdown
-    - name: Check Nginx format
-      services:
-        - docker
-      before_script:
-        - cd fatchord-WaveRNN/
-        - export VIRTUAL_HOST=localhost
-        - "sed 's+build: ./hokbu-khuanking/+image: nginx:1-alpine+g' -i docker-compose.yaml"
-      script:
-        - docker network create nginx-bridge
-        - docker-compose up -d
-        - docker-compose run --rm nginx-cache nginx -t
-        - docker-compose run --rm hokbu-nginx nginx -t
-      after_failure:
-        - docker-compose logs
     - stage: tsinghap
       name: docker-compose tsiunnsuann
       services:
@@ -59,6 +45,9 @@ jobs:
         - cat docker-compose.yaml | grep deploy
         - sed '/deploy/,+6d' -i docker-compose.yaml
         - docker-compose up -d
+        # Check Nginx format
+        - docker-compose run --rm nginx-cache nginx -t
+        - docker-compose run --rm hokbu-nginx nginx -t
         - sleep 1
         - BANGTSI=http://localhost/bangtsam?taibun=ta%CC%8Dk-ke%20ts%C3%B2-hu%C3%A9%20l%C3%A2i%20tshit-th%C3%B4!
         - time curl -I -L "$BANGTSI" --output siann.mp3
