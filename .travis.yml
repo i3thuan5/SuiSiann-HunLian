@@ -49,15 +49,15 @@ jobs:
         - docker-compose up -d
         - sleep 1
         - BANGTSI=http://localhost/bangtsam?taibun=ta%CC%8Dk-ke%20ts%C3%B2-hu%C3%A9%20l%C3%A2i%20tshit-th%C3%B4!
-        - time curl -L "$BANGTSI" --output siann.mp3
+        - time curl -I -L "$BANGTSI" --output siann.mp3
         - file siann.mp3 | tee siann.type.txt
         - cat siann.type.txt | grep 16
-        - time curl -L "$BANGTSI" --output /dev/null
-        - time curl -L "$BANGTSI" --output /dev/null
-        - curl --max-time 1 -L "$BANGTSI" --output /dev/null
+        - time curl -I -L "$BANGTSI" --output /dev/null
+        - time curl -I -L "$BANGTSI" --output /dev/null
+        - curl --max-time 1 -I -L "$BANGTSI" --output /dev/null
         - sudo rm -rf '6-kiatko/*'
-        - curl --max-time 1 -L "$BANGTSI" --output /dev/null
-        - curl --max-time 1 -L "$BANGTSI" -H 'range: bytes=0-' --output /dev/null
+        - curl --max-time 1 -I -L "$BANGTSI" --output /dev/null
+        - curl --max-time 1 -I -L "$BANGTSI" -H 'range: bytes=0-' --output /dev/null
       after_failure:
         - docker-compose -f ZuGi/docker-compose.yml logs
         - docker-compose logs
