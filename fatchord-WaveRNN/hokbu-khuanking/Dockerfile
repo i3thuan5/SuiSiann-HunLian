@@ -1,7 +1,7 @@
 FROM pytorch/pytorch:1.12.1-cuda11.3-cudnn8-runtime
 
 RUN apt-get update && \
-  apt-get install -y git \
+  apt-get install --no-install-recommends -y git \
     libsndfile1 ffmpeg # librosa output, tsuan mp3
 
 COPY requirements.txt ./
