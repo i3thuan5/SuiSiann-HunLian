@@ -123,6 +123,15 @@ args, voc_model, tts_model, batched, target, overlap, save_attn = thak()
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
     enable_tracing=True,
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=0.1,
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=False,
 )
 app = Flask(__name__)
 
