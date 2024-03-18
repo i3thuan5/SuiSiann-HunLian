@@ -181,9 +181,14 @@ def hapsing(tshamsoo):
     imtong_sootsai_mp3 = join('/kiatko', sootsai_mp3)
     if not isfile(imtong_sootsai_mp3):
         tsau(khaugitiau, imtong_sootsai_wav)
-        subprocess.run([
-            'ffmpeg', '-y', '-i', imtong_sootsai_wav, imtong_sootsai_mp3
-        ], check=True)
+        subprocess.run(
+            [
+                'ffmpeg', '-y', '-i', imtong_sootsai_wav, imtong_sootsai_mp3
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True,
+        )
 
     bangtsi = '/kiatko/{}'.format(
         quote(sootsai_mp3),
