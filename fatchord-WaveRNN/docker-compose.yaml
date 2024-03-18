@@ -59,6 +59,11 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
+  thai-imtong:
+    image: alpine:3
+    volumes:
+      - "./6-kiatko:/kiatko"
+      - "thai-khuanking/15min:/etc/periodic/15min/:ro"
 
 networks:
   nginx-bridge:
