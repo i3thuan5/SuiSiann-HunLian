@@ -3,21 +3,24 @@ version: '3.7'
 
 services:
   nginx-cache:
-    build: ./nginx-cache/
+    image: nginx:1-alpine
     networks:
       - default
       - nginx-bridge
+    volumes:
+      - "./nginx-cache/default.conf:/etc/nginx/conf.d/default.conf:ro"
     environment:
       - VIRTUAL_HOST=${VIRTUAL_HOST:-hapsing.ithuan.tw}
       - LETSENCRYPT_HOST=${VIRTUAL_HOST:-hapsing.ithuan.tw}
       - LETSENCRYPT_EMAIL=ithuan@ithuan.tw
     restart: always
   hokbu-nginx:
-    build: ./hokbu-nginx/
+    image: nginx:1-alpine
     networks:
       - default
       - hokbu-bridge
     volumes:
+      - "./hokbu-nginx/default.conf:/etc/nginx/conf.d/default.conf:ro"
       - "./6-kiatko:/kiatko:ro"
     restart: always
   hapsing:
