@@ -72,6 +72,7 @@ services:
     volumes:
       - "./6-kiatko:/kiatko"
       - "./thai-khuanking/15min:/etc/periodic/15min/:ro"
+    command: crond -f -l 0 -L -
 
 networks:
   nginx-bridge:
