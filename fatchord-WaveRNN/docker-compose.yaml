@@ -3,7 +3,7 @@ version: '3.7'
 
 services:
   nginx:
-    build: ./hokbu-nginx
+    build: ./hokbu-nginx/
     volumes:
       - "./6-kiatko:/kiatko:ro"
     networks:
@@ -15,7 +15,7 @@ services:
       - LETSENCRYPT_EMAIL=ithuan@ithuan.tw
     restart: always
   hapsing:
-    image: ithuan/suisiann-wavernn:diong-20230113
+    build: ./hokbu-khuanking/
     deploy:
       resources:
         reservations:

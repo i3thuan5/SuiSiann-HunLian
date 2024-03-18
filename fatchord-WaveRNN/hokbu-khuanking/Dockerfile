@@ -1,4 +1,7 @@
-FROM pytorch/pytorch:1.3-cuda10.1-cudnn7-runtime
+FROM pytorch/pytorch:1.8.1-cuda10.2-cudnn7-runtime
+
+COPY requirements.txt ./
+RUN pip install -r requirements.txt
 
 RUN apt-get update && \
   apt-get install -y git vim-tiny \
@@ -8,10 +11,6 @@ RUN git clone https://github.com/i3thuan5/WaveRNN.git /WaveRNN
 WORKDIR /WaveRNN
 
 ENV LANG C.UTF-8
-RUN pip install -r requirements.txt
-RUN pip install tai5-uan5_gian5-gi2_kang1-ku7
-
-RUN pip install flask gunicorn
 COPY gen_tacotron.py suisiann.py
 
 ENV GUNICORN_TIMEOUT 60
