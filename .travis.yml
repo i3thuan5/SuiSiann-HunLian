@@ -1,8 +1,6 @@
 ---
 os: linux
 dist: jammy
-services:
-  - docker
 language: python
 python:
   - '3.10'
@@ -30,7 +28,7 @@ jobs:
         - tox -e pymarkdown
     # - stage: tsinghap
     - name: docker-compose tsiunnsuann
-      service:
+      services:
         - docker
       before_script:
         - cd fatchord-WaveRNN/
