@@ -1,2 +1,2 @@
-#!/bin/bash
-find /kiatko -mmin +15 -delete
+#!/bin/sh
+find /kiatko -type f -mmin +15 -delete
