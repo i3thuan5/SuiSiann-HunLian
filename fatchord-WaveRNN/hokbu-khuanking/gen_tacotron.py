@@ -23,6 +23,7 @@ from os.path import isfile
 from librosa.core.audio import get_duration
 import subprocess
 from urllib.parse import urlencode
+import sentry_sdk
 
 
 def thak():
@@ -119,6 +120,10 @@ def thak():
 
 args, voc_model, tts_model, batched, target, overlap, save_attn = thak()
 
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    enable_tracing=True,
+)
 app = Flask(__name__)
 
 
