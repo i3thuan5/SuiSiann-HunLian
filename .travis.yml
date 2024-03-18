@@ -52,12 +52,12 @@ jobs:
         - time curl -I -L "$BANGTSI" --output siann.mp3
         - file siann.mp3 | tee siann.type.txt
         - cat siann.type.txt | grep 16
-        - time curl -I -L "$BANGTSI" --output /dev/null
-        - time curl -I -L "$BANGTSI" --output /dev/null
-        - curl --max-time 1 -I -L "$BANGTSI" --output /dev/null
+        - time curl -L "$BANGTSI" -I
+        - time curl -L "$BANGTSI" -I
+        - curl --max-time 1 -L "$BANGTSI" -I
         - sudo rm -rf '6-kiatko/*'
-        - curl --max-time 1 -I -L "$BANGTSI" --output /dev/null
-        - curl --max-time 1 -I -L "$BANGTSI" -H 'range: bytes=0-' --output /dev/null
+        - curl --max-time 1 -L "$BANGTSI" -I
+        - "curl --max-time 1 -L \"$BANGTSI\" -H 'range: bytes=0-' -I"
       after_failure:
         - docker-compose -f ZuGi/docker-compose.yml logs
         - docker-compose logs
