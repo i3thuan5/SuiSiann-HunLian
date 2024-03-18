@@ -32,10 +32,10 @@ jobs:
       before_script:
         - cd fatchord-WaveRNN/
         - export VIRTUAL_HOST=localhost
+        - "sed 's+build: ./hokbu-khuanking/+image: nginx:1-alpine+g' -i docker-compose.yaml"
       script:
         - docker network create nginx-bridge
-        - docker-compose up -d nginx-cache
-        - docker-compose up -d hokbu-nginx
+        - docker-compose up -d
         - docker-compose run --rm nginx-cache nginx -t
         - docker-compose run --rm hokbu-nginx nginx -t
       after_failure:
