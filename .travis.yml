@@ -26,8 +26,22 @@ jobs:
         - pip install tox
       script:
         - tox -e pymarkdown
-    # - stage: tsinghap
-    - name: docker-compose tsiunnsuann
+    - name: Check Nginx format
+      services:
+        - docker
+      before_script:
+        - cd fatchord-WaveRNN/
+        - export VIRTUAL_HOST=localhost
+      script:
+        - docker network create nginx-bridge
+        - docker-compose up -d nginx-cache
+        - docker-compose up -d hokbu-nginx
+        - docker-compose run --rm nginx-cache nginx -t
+        - docker-compose run --rm hokbu-nginx nginx -t
+      after_failure:
+        - docker-compose logs
+    - stage: tsinghap
+      name: docker-compose tsiunnsuann
       services:
         - docker
       before_script:
