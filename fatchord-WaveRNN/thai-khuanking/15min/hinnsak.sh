@@ -1,2 +1,2 @@
 #!/bin/bash
-find /kiatko -amin +10 -delete
+find /kiatko -amin +15 -delete
