@@ -24,6 +24,7 @@ from librosa.core.audio import get_duration
 import subprocess
 from urllib.parse import urlencode
 import sentry_sdk
+from sys import stderr
 
 
 def thak():
@@ -58,7 +59,7 @@ def thak():
         device = torch.device('cuda')
     else:
         device = torch.device('cpu')
-    print('Using device:', device)
+    print('Using device:', device, file=stderr)
 
     if args.vocoder == 'wavernn':
         # set defaults for any arguments that depend on hparams
@@ -73,7 +74,7 @@ def thak():
         target = int(args.target)
         overlap = int(args.overlap)
 
-        print('\nInitialising WaveRNN Model...\n')
+        print('\nInitialising WaveRNN Model...\n', file=stderr)
         # Instantiate WaveRNN Model
         voc_model = WaveRNN(rnn_dims=hp.voc_rnn_dims,
                             fc_dims=hp.voc_fc_dims,
@@ -96,7 +97,7 @@ def thak():
         target = None
         overlap = None
 
-    print('\nInitialising Tacotron Model...\n')
+    print('\nInitialising Tacotron Model...\n', file=stderr)
 
     # Instantiate Tacotron Model
     tts_model = Tacotron(embed_dims=hp.tts_embed_dims,
@@ -118,8 +119,6 @@ def thak():
     return args, voc_model, tts_model, batched, target, overlap, save_attn
 
 
-args, voc_model, tts_model, batched, target, overlap, save_attn = thak()
-
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
     enable_tracing=True,
@@ -134,6 +133,7 @@ sentry_sdk.init(
     send_default_pii=False,
 )
 app = Flask(__name__)
+args, voc_model, tts_model, batched, target, overlap, save_attn = thak()
 
 
 @app.route("/", methods=['POST', 'GET'])
@@ -223,7 +223,7 @@ def tsau(input_text, save_path):
 
     for i, x in enumerate(inputs, 1):
 
-        print(f'\n| Generating {i}/{len(inputs)}')
+        print(f'\n| Generating {i}/{len(inputs)}', file=stderr)
         _, m, attention = tts_model.generate(x)
         # Fix mel spectrogram scaling to be from 0 to 1
         m = (m + 4) / 8
@@ -239,4 +239,4 @@ def tsau(input_text, save_path):
             wav = reconstruct_waveform(m, n_iter=args.iters)
             save_wav(wav, save_path)
 
-    print('\n\nDone.\n')
+    print('\n\nDone.\n', file=stderr)

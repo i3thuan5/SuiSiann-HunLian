@@ -1,8 +1,6 @@
 ---
 os: linux
 dist: jammy
-services:
-  - docker
 language: python
 python:
   - '3.10'
@@ -28,9 +26,9 @@ jobs:
         - pip install tox
       script:
         - tox -e pymarkdown
-    # - stage: tsinghap
-    - name: docker-compose tsiunnsuann
-      service:
+    - stage: tsinghap
+      name: docker-compose tsiunnsuann
+      services:
         - docker
       before_script:
         - cd fatchord-WaveRNN/
@@ -47,14 +45,20 @@ jobs:
         - cat docker-compose.yaml | grep deploy
         - sed '/deploy/,+6d' -i docker-compose.yaml
         - docker-compose up -d
+        # Check Nginx format
+        - docker-compose run --rm nginx-cache nginx -t
+        - docker-compose run --rm hokbu-nginx nginx -t
         - sleep 1
         - BANGTSI=http://localhost/bangtsam?taibun=ta%CC%8Dk-ke%20ts%C3%B2-hu%C3%A9%20l%C3%A2i%20tshit-th%C3%B4!
         - time curl -L "$BANGTSI" --output siann.mp3
         - file siann.mp3 | tee siann.type.txt
         - cat siann.type.txt | grep 16
-        - time curl -L "$BANGTSI" --output /dev/null
-        - time curl -L "$BANGTSI" --output /dev/null
-        - curl --max-time 1 -L "$BANGTSI" --output siann.mp3
+        - time curl -L "$BANGTSI" -I
+        - time curl -L "$BANGTSI" -I
+        - curl --max-time 1 -L "$BANGTSI" -I
+        - docker-compose exec hapsing find /kiatko/ -type f -delete
+        - curl --max-time 1 -L "$BANGTSI" -I
+        - "curl --max-time 1 -L \"$BANGTSI\" -H 'range: bytes=0-' -I"
       after_failure:
         - docker-compose -f ZuGi/docker-compose.yml logs
         - docker-compose logs
