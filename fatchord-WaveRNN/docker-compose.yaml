@@ -41,10 +41,10 @@ services:
       - GUNICORN_WORKERS=${GUNICORN_WORKERS:-6}
       - GUNICORN_MAX_REQUESTS=${GUNICORN_MAX_REQUESTS:-30}
       - GUNICORN_MAX_REQUESTS_JITTER=${GUNICORN_MAX_REQUESTS_JITTER:-10}
-      - DEVICE=${DEVICE:-gpu} # gpu/cpu
-      - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0} # all/0
-      - VOCODER=${VOCODER:-wavernn} # wavernn/griffinlim
-      - BATCHED=${BATCHED:-batched} # batched/unbatched
+      - DEVICE=${DEVICE:-gpu}  # gpu/cpu
+      - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}  # all/0
+      - VOCODER=${VOCODER:-wavernn}  # wavernn/griffinlim
+      - BATCHED=${BATCHED:-batched}  # batched/unbatched
       - TARGET=${TARGET:-2000}
       - OVERLAP=${OVERLAP:-400}
       - GL_ITERS=${GL_ITERS:-32}
