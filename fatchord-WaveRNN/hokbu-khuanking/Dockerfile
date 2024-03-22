@@ -11,7 +11,7 @@ RUN git clone https://github.com/i3thuan5/WaveRNN.git /WaveRNN
 WORKDIR /WaveRNN
 
 ENV LANG C.UTF-8
-COPY gen_tacotron.py suisiann.py
+COPY suisiann.py ./
 
 ENV GUNICORN_TIMEOUT 60
 ENV GUNICORN_WORKERS 6
