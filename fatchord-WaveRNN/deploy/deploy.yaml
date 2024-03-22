@@ -3,9 +3,10 @@
   hosts: tsiunnsuann
 
   tasks:
-    - name: 專案名先改做小寫
+    - name: 專案名先改做小寫koh有設定絕對位
       ansible.builtin.set_fact:
         tsuanan: "{{ tsuanan_repo|lower }}"
+        tsuanan_path: "{{ lookup('ansible.builtin.env', 'HOME') }}/{{ tsuanan_repo }}"
     - name: 設定Github known_hosts
       ansible.builtin.known_hosts:
         name: 'github.com'
@@ -13,16 +14,16 @@
     - name: 設定Github專案
       ansible.builtin.git:
         repo: "git@github.com:i3thuan5/{{ tsuanan_repo }}.git"
-        dest: "{{ tsuanan_repo }}"
+        dest: "{{ tsuanan_path }}"
         version: "{{ branch }}"
         force: true
     - name: 設定專案.env
       ansible.builtin.template:
         src: .env.template
-        dest: "{{ tsuanan_repo }}/{{ TTS }}/.env"
+        dest: "{{ tsuanan_path }}/{{ TTS }}/.env"
     - name: 開docker compose up -d
       community.docker.docker_compose_v2:
-        project_src: "{{ tsuanan_repo }}/{{ TTS }}"
+        project_src: "{{ tsuanan_path }}/{{ TTS }}"
         build: "always"
         pull: "always"
         remove_orphans: true
@@ -35,4 +36,4 @@
         docker-compose exec -T nginx-cache nginx -s reload
         docker-compose exec -T hokbu-nginx nginx -s reload
       args:
-        chdir: "{{ tsuanan_repo }}/{{ TTS }}"
+        chdir: "{{ tsuanan_path }}/{{ TTS }}"
