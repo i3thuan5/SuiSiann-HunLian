@@ -36,6 +36,7 @@ services:
               count: all
               capabilities: [gpu]
     environment:
+      - SENTRY_DSN=${SENTRY_DSN:-}
       - GUNICORN_TIMEOUT=${GUNICORN_TIMEOUT:-60}
       - GUNICORN_WORKERS=${GUNICORN_WORKERS:-6}
       - GUNICORN_MAX_REQUESTS=${GUNICORN_MAX_REQUESTS:-30}
@@ -47,7 +48,6 @@ services:
       - TARGET=${TARGET:-2000}
       - OVERLAP=${OVERLAP:-400}
       - GL_ITERS=${GL_ITERS:-32}
-      - SENTRY_DSN=${SENTRY_DSN:-}
     volumes:
       - "./tshamsoo/hparams.py:/WaveRNN/hparams.py:ro"
       - "./tshamsoo/text_init.py:/WaveRNN/utils/text/__init__.py:ro"
