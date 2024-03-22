@@ -88,5 +88,16 @@ jobs:
             --extra-vars "TRAVIS_TSUKI_SSH_KEY_PATH=${TRAVIS_TSUKI_SSH_KEY_PATH}"
             --extra-vars "VIRTUAL_HOST=${VIRTUAL_HOST}"
             --extra-vars "SENTRY_DSN=${SENTRY_DSN}"
+            --extra-vars "GUNICORN_TIMEOUT=${GUNICORN_TIMEOUT}"
+            --extra-vars "GUNICORN_WORKERS=${GUNICORN_WORKERS}"
+            --extra-vars "GUNICORN_MAX_REQUESTS=${GUNICORN_MAX_REQUESTS}"
+            --extra-vars "GUNICORN_MAX_REQUESTS_JITTER=${GUNICORN_MAX_REQUESTS_JITTER}"
+            --extra-vars "DEVICE=${DEVICE}"
+            --extra-vars "CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}"
+            --extra-vars "VOCODER=${VOCODER}"
+            --extra-vars "BATCHED=${BATCHED}"
+            --extra-vars "TARGET=${TARGET}"
+            --extra-vars "OVERLAP=${OVERLAP}"
+            --extra-vars "GL_ITERS=${GL_ITERS}"
             # --extra-vars 其他 .env.template 變數
           '
