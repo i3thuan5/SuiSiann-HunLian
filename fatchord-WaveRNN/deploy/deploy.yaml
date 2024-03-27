@@ -27,7 +27,10 @@
         bucket: boohing
         object: "/{{ tsuanan_repo }}/0.2.1-checkpoints.tgz"
         dest: "{{ tsuanan_path }}/{{ TTS }}/0.2.1-checkpoints.tgz"
+        access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
         endpoint_url: "{{ AWS_S3_ENDPOINT_URL }}"
+        debug_botocore_endpoint_logs: true
     - name: 開docker compose up -d
       community.docker.docker_compose_v2:
         project_src: "{{ tsuanan_path }}/{{ TTS }}"
