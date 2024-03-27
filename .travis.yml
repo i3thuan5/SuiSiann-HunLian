@@ -64,3 +64,43 @@ jobs:
         - docker-compose logs
         - cat siann.type.txt
         - cat siann.mp3
+    - stage: deploy
+      name: deploy
+      if: (type = push or type = cron) and (branch = master or branch = CD)
+      install:
+        - pip install ansible
+      before_script:
+        - mkdir -p "${HOME}/.ssh/"
+        - TRAVIS_TSUKI_SSH_KEY_PATH="${HOME}/.ssh/id_ed25519_travis"
+        - echo "${DEPLOY_HOST} ssh-ed25519 ${DEPLOY_HOST_SSH_PUBLICKEY}" >> ${HOME}/.ssh/known_hosts
+        - echo "${DEPLOY_HOST_USER_SSH_KEY}" | base64 --decode > "${TRAVIS_TSUKI_SSH_KEY_PATH}"
+        # Recreate the certificate from the secure environment variable
+        - chmod 400 "${TRAVIS_TSUKI_SSH_KEY_PATH}"
+      script:
+        - '
+          ansible-playbook -i fatchord-WaveRNN/deploy/inventory_travis
+              fatchord-WaveRNN/deploy/deploy.yaml
+            --extra-vars "TTS=fatchord-WaveRNN"
+            --extra-vars "tsuanan_repo=`basename ${TRAVIS_REPO_SLUG}`"
+            --extra-vars "branch=${TRAVIS_BRANCH}"
+            --extra-vars "DEPLOY_HOST=${DEPLOY_HOST}"
+            --extra-vars "DEPLOY_HOST_USER=${DEPLOY_HOST_USER}"
+            --extra-vars "TRAVIS_TSUKI_SSH_KEY_PATH=${TRAVIS_TSUKI_SSH_KEY_PATH}"
+            --extra-vars "AWS_S3_ENDPOINT_URL=${AWS_S3_ENDPOINT_URL}"
+            --extra-vars "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
+            --extra-vars "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
+            --extra-vars "VIRTUAL_HOST=${VIRTUAL_HOST}"
+            --extra-vars "SENTRY_DSN=${SENTRY_DSN}"
+            --extra-vars "GUNICORN_TIMEOUT=${GUNICORN_TIMEOUT}"
+            --extra-vars "GUNICORN_WORKERS=${GUNICORN_WORKERS}"
+            --extra-vars "GUNICORN_MAX_REQUESTS=${GUNICORN_MAX_REQUESTS}"
+            --extra-vars "GUNICORN_MAX_REQUESTS_JITTER=${GUNICORN_MAX_REQUESTS_JITTER}"
+            --extra-vars "DEVICE=${DEVICE}"
+            --extra-vars "CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}"
+            --extra-vars "VOCODER=${VOCODER}"
+            --extra-vars "BATCHED=${BATCHED}"
+            --extra-vars "TARGET=${TARGET}"
+            --extra-vars "OVERLAP=${OVERLAP}"
+            --extra-vars "GL_ITERS=${GL_ITERS}"
+            # --extra-vars 其他 .env.template 變數
+          '

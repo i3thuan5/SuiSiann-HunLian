@@ -1,0 +1,55 @@
+---
+- name: CD
+  hosts: tsiunnsuann
+
+  tasks:
+    - name: 專案名先改做小寫koh有設定絕對位
+      ansible.builtin.set_fact:
+        tsuanan: "{{ tsuanan_repo|lower }}"
+        tsuanan_path: "{{ ansible_env.HOME }}/{{ tsuanan_repo }}"
+    - name: 設定Github known_hosts
+      ansible.builtin.known_hosts:
+        name: 'github.com'
+        key: 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl'
+    - name: 設定Github專案
+      ansible.builtin.git:
+        repo: "git@github.com:i3thuan5/{{ tsuanan_repo }}.git"
+        dest: "{{ tsuanan_path }}"
+        version: "{{ branch }}"
+        force: true
+    - name: 設定專案.env
+      ansible.builtin.template:
+        src: .env.template
+        dest: "{{ tsuanan_path }}/{{ TTS }}/.env"
+    - name: Lia̍h模型
+      amazon.aws.s3_object:
+        mode: get
+        overwrite: latest
+        bucket: boohing
+        object: "{{ tsuanan_repo }}/0.2.1-checkpoints.tgz"
+        dest: "0.2.1-checkpoints.tgz"
+        access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        endpoint_url: "{{ AWS_S3_ENDPOINT_URL }}"
+    - name: Tháu-khui
+      ansible.builtin.unarchive:
+        src: "0.2.1-checkpoints.tgz"
+        dest: "{{ tsuanan_path }}/{{ TTS }}/"
+        remote_src: yes
+    - name: 開docker compose up -d
+      community.docker.docker_compose_v2:
+        project_src: "{{ tsuanan_path }}/{{ TTS }}"
+        build: "always"
+        pull: "always"
+        remove_orphans: true
+    - name: 等5秒hōo docker開--開
+      ansible.builtin.wait_for:
+        timeout: 5
+      delegate_to: localhost
+    - name: 更新nginx
+      ansible.builtin.command: '{{ item }}'
+      with_items:
+        - docker compose exec -T nginx-cache nginx -s reload
+        - docker compose exec -T hokbu-nginx nginx -s reload
+      args:
+        chdir: "{{ tsuanan_path }}/{{ TTS }}"
