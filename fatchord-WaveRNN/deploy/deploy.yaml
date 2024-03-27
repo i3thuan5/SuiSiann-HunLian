@@ -47,8 +47,9 @@
         timeout: 5
       delegate_to: localhost
     - name: 更新nginx
-      ansible.builtin.command: |
-        docker-compose exec -T nginx-cache nginx -s reload
-        docker-compose exec -T hokbu-nginx nginx -s reload
+      ansible.builtin.command: '{{ item }}'
+      with_items:
+        - docker compose exec -T nginx-cache nginx -s reload
+        - docker compose exec -T hokbu-nginx nginx -s reload
       args:
         chdir: "{{ tsuanan_path }}/{{ TTS }}"
