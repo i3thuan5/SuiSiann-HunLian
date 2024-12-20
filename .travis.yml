@@ -44,6 +44,7 @@ jobs:
         # 試docker-compose
         - cat docker-compose.yaml | grep deploy
         - sed '/deploy/,+6d' -i docker-compose.yaml
+        - sed '/healthcheck/,+5d' -i docker-compose.yaml
         - docker-compose up -d
         # Check Nginx format
         - docker-compose run --rm nginx-cache nginx -t
