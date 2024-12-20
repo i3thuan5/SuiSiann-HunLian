@@ -65,7 +65,7 @@ services:
       - autoheal.stop.timeout=1
     restart: always
   autoheal:
-    image: willfarrell/autoheal
+    image: willfarrell/autoheal:1.2.0
     environment:
       - AUTOHEAL_CONTAINER_LABEL=all
     volumes:
