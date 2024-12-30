@@ -6,7 +6,7 @@ python:
   - '3.10'
 branches:
   only:
-    - master
+    - main
 before_install:
   - pip install --upgrade pip setuptools
 jobs:
