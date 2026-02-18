@@ -34,7 +34,6 @@ jobs:
         - cd fatchord-WaveRNN/
         - export VIRTUAL_HOST=localhost
         - export DEVICE=cpu
-        - export GUNICORN_WORKERS=1
         - wget https://tongan-puntiunn.ithuan.tw/SuiSiann-HunLian/0.2.1-checkpoints.tgz
         - tar -xzvf 0.2.1-checkpoints.tgz
       script:
@@ -48,7 +47,6 @@ jobs:
         - docker-compose up -d
         # Check Nginx format
         - docker-compose run --rm nginx-cache nginx -t
-        - docker-compose run --rm hokbu-nginx nginx -t
         - sleep 10
         - BANGTSI=http://localhost/bangtsam?taibun=ta%CC%8Dk-ke%20ts%C3%B2-hu%C3%A9%20l%C3%A2i%20tshit-th%C3%B4!
         - time curl -L "$BANGTSI" --output siann.mp3
@@ -93,9 +91,7 @@ jobs:
             --extra-vars "VIRTUAL_HOST=${VIRTUAL_HOST}"
             --extra-vars "SENTRY_DSN=${SENTRY_DSN}"
             --extra-vars "GUNICORN_TIMEOUT=${GUNICORN_TIMEOUT}"
-            --extra-vars "GUNICORN_WORKERS=${GUNICORN_WORKERS}"
-            --extra-vars "GUNICORN_MAX_REQUESTS=${GUNICORN_MAX_REQUESTS}"
-            --extra-vars "GUNICORN_MAX_REQUESTS_JITTER=${GUNICORN_MAX_REQUESTS_JITTER}"
+            --extra-vars "GPU_CONCURRENCY=${GPU_CONCURRENCY}"
             --extra-vars "DEVICE=${DEVICE}"
             --extra-vars "CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}"
             --extra-vars "VOCODER=${VOCODER}"

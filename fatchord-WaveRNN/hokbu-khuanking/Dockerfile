@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:1.12.1-cuda11.3-cudnn8-runtime
+FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
 
 RUN apt-get update && \
   apt-get install --no-install-recommends -y git \
@@ -14,17 +14,14 @@ ENV LANG C.UTF-8
 COPY suisiann.py ./
 
 ENV GUNICORN_TIMEOUT 60
-ENV GUNICORN_WORKERS 6
-ENV GUNICORN_MAX_REQUESTS 30
-ENV GUNICORN_MAX_REQUESTS_JITTER 10
+ENV GPU_CONCURRENCY 1
 
-EXPOSE 5000
+EXPOSE 8000
 
 CMD gunicorn \
-  -b 0.0.0.0:5000 \
+  -b 0.0.0.0:8000 \
   --timeout ${GUNICORN_TIMEOUT} \
-  --workers ${GUNICORN_WORKERS} \
-  --max-requests ${GUNICORN_MAX_REQUESTS} \
-  --max-requests-jitter ${GUNICORN_MAX_REQUESTS_JITTER} \
-  --log-level debug \
+  --workers 1 \
+  -k uvicorn.workers.UvicornWorker \
+  --log-level info \
   suisiann:app

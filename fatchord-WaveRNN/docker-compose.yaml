@@ -15,19 +15,8 @@ services:
       - LETSENCRYPT_HOST=${VIRTUAL_HOST:-hapsing.ithuan.tw}
       - LETSENCRYPT_EMAIL=ithuan@ithuan.tw
     restart: always
-  hokbu-nginx:
-    image: nginx:1-alpine
-    networks:
-      - default
-      - hokbu-bridge
-    volumes:
-      - "./hokbu-nginx/default.conf:/etc/nginx/conf.d/default.conf:ro"
-      - "hapsing_limsi_data:/kiatko:ro"
-    restart: always
   hapsing:
     build: ./hokbu-khuanking/
-    networks:
-      - hokbu-bridge
     deploy:
       resources:
         reservations:
@@ -38,9 +27,7 @@ services:
     environment:
       - SENTRY_DSN=${SENTRY_DSN:-}
       - GUNICORN_TIMEOUT=${GUNICORN_TIMEOUT:-60}
-      - GUNICORN_WORKERS=${GUNICORN_WORKERS:-6}
-      - GUNICORN_MAX_REQUESTS=${GUNICORN_MAX_REQUESTS:-30}
-      - GUNICORN_MAX_REQUESTS_JITTER=${GUNICORN_MAX_REQUESTS_JITTER:-10}
+      - GPU_CONCURRENCY=${GPU_CONCURRENCY:-1}
       - DEVICE=${DEVICE:-gpu}  # gpu/cpu
       - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}  # all/0
       - VOCODER=${VOCODER:-wavernn}  # wavernn/griffinlim
@@ -85,4 +72,3 @@ volumes:
 networks:
   nginx-bridge:
     external: true
-  hokbu-bridge:

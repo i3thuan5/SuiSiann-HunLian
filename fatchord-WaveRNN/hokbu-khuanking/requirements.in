@@ -7,6 +7,7 @@ inflect
 nltk
 
 tai5-uan5_gian5-gi2_kang1-ku7
-flask
+fastapi
+uvicorn[standard]
 gunicorn
-sentry-sdk[flask]
+sentry-sdk[fastapi]

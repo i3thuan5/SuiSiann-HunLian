@@ -1,173 +1,159 @@
+import asyncio
+import hashlib
+import os
+import subprocess
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import asynccontextmanager
+from os.path import isfile, join
+from sys import stderr
+from urllib.parse import quote, urlencode
+
+import numpy as np
+import sentry_sdk
 import torch
+from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse, JSONResponse
+from librosa.core.audio import get_duration
 from models.fatchord_version import WaveRNN
-from utils import hparams as hp
-from utils.text.symbols import symbols
-from utils.paths import Paths
 from models.tacotron import Tacotron
-import argparse
-from utils.text import text_to_sequence
+from utils import hparams as hp
 from utils.display import save_attention, simple_table
 from utils.dsp import reconstruct_waveform, save_wav
-import numpy as np
-import os
-
-
-from flask import Flask, request, Response, jsonify
-from os.path import join
-from urllib.parse import quote
-
+from utils.paths import Paths
+from utils.text import text_to_sequence
+from utils.text.symbols import symbols
 from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
 from 臺灣言語工具.語音合成 import 台灣話口語講法
-import hashlib
-from os.path import isfile
-from librosa.core.audio import get_duration
-import subprocess
-from urllib.parse import urlencode
-import sentry_sdk
-from sys import stderr
+
+models = {}
+gpu_semaphore = None
+executor = None
 
 
 def thak():
-    class Tshamsoo():
-        device = os.getenv('DEVICE', 'gpu')
-        hp_file = 'hparams.py'
-        vocoder = os.getenv('VOCODER', 'wavernn')
-        batched = os.getenv('BATCHED', 'batched') == 'batched'
-        target = os.getenv('TARGET', None)
-        overlap = os.getenv('OVERLAP', None)
-        tts_weights = None
-        save_attn = os.getenv('SAVE_ATTN', False)
-        voc_weights = None
-        iters = os.getenv('GL_ITERS', 32)
+    vocoder = os.getenv('VOCODER', 'wavernn')
+    device_env = os.getenv('DEVICE', 'gpu')
+    batched = os.getenv('BATCHED', 'batched') == 'batched'
+    target_env = os.getenv('TARGET', None)
+    overlap_env = os.getenv('OVERLAP', None)
+    save_attn = os.getenv('SAVE_ATTN', False)
+    iters = os.getenv('GL_ITERS', 32)
 
-    args = Tshamsoo()
-    if args.vocoder in ['griffinlim', 'gl']:
-        args.vocoder = 'griffinlim'
-    elif args.vocoder in ['wavernn', 'wr']:
-        args.vocoder = 'wavernn'
+    if vocoder in ['griffinlim', 'gl']:
+        vocoder = 'griffinlim'
+    elif vocoder in ['wavernn', 'wr']:
+        vocoder = 'wavernn'
     else:
-        raise argparse.ArgumentError('Must provide a valid vocoder type!')
+        raise ValueError('Must provide a valid vocoder type!')
 
-    hp.configure(args.hp_file)  # Load hparams from file
-
-    tts_weights = args.tts_weights
-    save_attn = args.save_attn
-
+    hp.configure('hparams.py')
     paths = Paths(hp.data_path, hp.voc_model_id, hp.tts_model_id)
 
-    if args.device == 'gpu' and torch.cuda.is_available():
+    if device_env == 'gpu' and torch.cuda.is_available():
         device = torch.device('cuda')
     else:
         device = torch.device('cpu')
     print('Using device:', device, file=stderr)
 
-    if args.vocoder == 'wavernn':
-        # set defaults for any arguments that depend on hparams
-        if args.target is None:
-            args.target = hp.voc_target
-        if args.overlap is None:
-            args.overlap = hp.voc_overlap
-        if args.batched is None:
-            args.batched = hp.voc_gen_batched
+    voc_model = None
+    target = None
+    overlap = None
 
-        batched = args.batched
-        target = int(args.target)
-        overlap = int(args.overlap)
+    if vocoder == 'wavernn':
+        if target_env is None:
+            target_env = hp.voc_target
+        if overlap_env is None:
+            overlap_env = hp.voc_overlap
+        if batched is None:
+            batched = hp.voc_gen_batched
+
+        target = int(target_env)
+        overlap = int(overlap_env)
 
         print('\nInitialising WaveRNN Model...\n', file=stderr)
-        # Instantiate WaveRNN Model
-        voc_model = WaveRNN(rnn_dims=hp.voc_rnn_dims,
-                            fc_dims=hp.voc_fc_dims,
-                            bits=hp.bits,
-                            pad=hp.voc_pad,
-                            upsample_factors=hp.voc_upsample_factors,
-                            feat_dims=hp.num_mels,
-                            compute_dims=hp.voc_compute_dims,
-                            res_out_dims=hp.voc_res_out_dims,
-                            res_blocks=hp.voc_res_blocks,
-                            hop_length=hp.hop_length,
-                            sample_rate=hp.sample_rate,
-                            mode=hp.voc_mode).to(device)
-
-        voc_load_path = args.voc_weights if args.voc_weights else paths.voc_latest_weights
+        voc_model = WaveRNN(
+            rnn_dims=hp.voc_rnn_dims,
+            fc_dims=hp.voc_fc_dims,
+            bits=hp.bits,
+            pad=hp.voc_pad,
+            upsample_factors=hp.voc_upsample_factors,
+            feat_dims=hp.num_mels,
+            compute_dims=hp.voc_compute_dims,
+            res_out_dims=hp.voc_res_out_dims,
+            res_blocks=hp.voc_res_blocks,
+            hop_length=hp.hop_length,
+            sample_rate=hp.sample_rate,
+            mode=hp.voc_mode,
+        ).to(device)
+        voc_load_path = paths.voc_latest_weights
         voc_model.load(voc_load_path)
-    else:
-        voc_model = None
-        batched = None
-        target = None
-        overlap = None
+        voc_model.eval()
 
     print('\nInitialising Tacotron Model...\n', file=stderr)
-
-    # Instantiate Tacotron Model
-    tts_model = Tacotron(embed_dims=hp.tts_embed_dims,
-                         num_chars=len(symbols),
-                         encoder_dims=hp.tts_encoder_dims,
-                         decoder_dims=hp.tts_decoder_dims,
-                         n_mels=hp.num_mels,
-                         fft_bins=hp.num_mels,
-                         postnet_dims=hp.tts_postnet_dims,
-                         encoder_K=hp.tts_encoder_K,
-                         lstm_dims=hp.tts_lstm_dims,
-                         postnet_K=hp.tts_postnet_K,
-                         num_highways=hp.tts_num_highways,
-                         dropout=hp.tts_dropout,
-                         stop_threshold=hp.tts_stop_threshold).to(device)
-
-    tts_load_path = tts_weights if tts_weights else paths.tts_latest_weights
+    tts_model = Tacotron(
+        embed_dims=hp.tts_embed_dims,
+        num_chars=len(symbols),
+        encoder_dims=hp.tts_encoder_dims,
+        decoder_dims=hp.tts_decoder_dims,
+        n_mels=hp.num_mels,
+        fft_bins=hp.num_mels,
+        postnet_dims=hp.tts_postnet_dims,
+        encoder_K=hp.tts_encoder_K,
+        lstm_dims=hp.tts_lstm_dims,
+        postnet_K=hp.tts_postnet_K,
+        num_highways=hp.tts_num_highways,
+        dropout=hp.tts_dropout,
+        stop_threshold=hp.tts_stop_threshold,
+    ).to(device)
+    tts_load_path = paths.tts_latest_weights
     tts_model.load(tts_load_path)
-    return args, voc_model, tts_model, batched, target, overlap, save_attn
+    tts_model.eval()
+
+    return {
+        'vocoder': vocoder,
+        'voc_model': voc_model,
+        'tts_model': tts_model,
+        'batched': batched,
+        'target': target,
+        'overlap': overlap,
+        'save_attn': save_attn,
+        'iters': iters,
+    }
 
 
-sentry_sdk.init(
-    dsn=os.getenv("SENTRY_DSN"),
-    enable_tracing=True,
+@asynccontextmanager
+async def lifespan(app):
+    global models, gpu_semaphore, executor
 
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production.
-    traces_sample_rate=0.1,
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_DSN"),
+        enable_tracing=True,
+        traces_sample_rate=0.1,
+        send_default_pii=False,
+    )
 
-    # If you wish to associate users to errors (assuming you are using
-    # django.contrib.auth) you may enable sending PII data.
-    send_default_pii=False,
-)
-app = Flask(__name__)
-args, voc_model, tts_model, batched, target, overlap, save_attn = thak()
+    models = thak()
+
+    concurrency = int(os.getenv('GPU_CONCURRENCY', '1'))
+    gpu_semaphore = asyncio.Semaphore(concurrency)
+    executor = ThreadPoolExecutor(max_workers=concurrency)
+    print(f'GPU concurrency: {concurrency}', file=stderr)
+
+    yield
+
+    executor.shutdown(wait=False)
 
 
-@app.route("/", methods=['POST', 'GET'])
-@app.route("/taiuanue.mp3", methods=['POST', 'GET'])
-@app.route("/bangtsam", methods=['POST', 'GET'])
-def bangtsam_tts():
+app = FastAPI(lifespan=lifespan)
+
+
+def _get_tshamsoo(request: Request):
     if request.method == 'POST':
-        _tongan_ti_hethong_toh, bangtsi = hapsing(request.form)
-    else:
-        _tongan_ti_hethong_toh, bangtsi = hapsing(request.args)
-
-    huein = Response()
-    huein.headers["Content-Type"] = "application/octet-stream"
-    huein.headers["Content-Disposition"] = "attachment; filename=taiuanue.mp3"
-    huein.headers['X-Accel-Redirect'] = bangtsi
-    return huein
+        return request._form
+    return request.query_params
 
 
-@app.route("/hapsing", methods=['POST', 'GET'])
-def line_tts():
-    if request.method == 'POST':
-        tshamsoo = request.form
-    else:
-        tshamsoo = request.args
-    tongan_ti_hethong_toh, _bangtsi = hapsing(tshamsoo)
-    sikan = get_duration(filename=tongan_ti_hethong_toh)
-    return jsonify({
-        'bangtsi': 'https://{}/taiuanue.mp3?{}'.format(
-            request.host, urlencode(tshamsoo, quote_via=quote)),
-        'sikan': sikan,
-    })
-
-
-def hapsing(tshamsoo):
+def _hapsing(tshamsoo):
     try:
         taibun = tshamsoo['taibun']
         句物件 = 拆文分析器.對齊句物件(taibun, taibun)
@@ -175,73 +161,85 @@ def hapsing(tshamsoo):
         hunsu = tshamsoo['hunsu']
         句物件 = 拆文分析器.分詞句物件(hunsu)
     khaugitiau = 台灣話口語講法(句物件) + ' .'
-    sootsai_wav = hashlib.sha256(khaugitiau.encode()).hexdigest() + '.wav'
-    sootsai_mp3 = hashlib.sha256(khaugitiau.encode()).hexdigest() + '.mp3'
-    imtong_sootsai_wav = join('/kiatko', sootsai_wav)
-    imtong_sootsai_mp3 = join('/kiatko', sootsai_mp3)
+    sootsai_hash = hashlib.sha256(khaugitiau.encode()).hexdigest()
+    imtong_sootsai_wav = join('/kiatko', sootsai_hash + '.wav')
+    imtong_sootsai_mp3 = join('/kiatko', sootsai_hash + '.mp3')
     if not isfile(imtong_sootsai_mp3):
-        tsau(khaugitiau, imtong_sootsai_wav)
+        _tsau(khaugitiau, imtong_sootsai_wav)
         subprocess.run(
-            [
-                'ffmpeg', '-y', '-i', imtong_sootsai_wav, imtong_sootsai_mp3
-            ],
+            ['ffmpeg', '-y', '-i', imtong_sootsai_wav, imtong_sootsai_mp3],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             check=True,
         )
-
-    bangtsi = '/kiatko/{}'.format(
-        quote(sootsai_mp3),
-    )
-    return imtong_sootsai_mp3, bangtsi
+    return imtong_sootsai_mp3
 
 
-def tsau(input_text, save_path):
-    if input_text:
-        inputs = [text_to_sequence(input_text.strip(), hp.tts_cleaner_names)]
-    else:
-        with open('sentences.txt') as f:
-            inputs = [text_to_sequence(line.strip(), hp.tts_cleaner_names) for line in f]
+def _tsau(input_text, save_path):
+    inputs = [text_to_sequence(input_text.strip(), hp.tts_cleaner_names)]
 
-    if args.vocoder == 'wavernn':
-        voc_k = voc_model.get_step() // 1000
-        tts_k = tts_model.get_step() // 1000
+    tts_model = models['tts_model']
+    voc_model = models['voc_model']
 
-        simple_table([
-            ('Tacotron', str(tts_k) + 'k'),
-            ('r', tts_model.r),
-            ('Vocoder Type', 'WaveRNN'),
-            ('WaveRNN', str(voc_k) + 'k'),
-            ('Generation Mode', 'Batched' if batched else 'Unbatched'),
-            ('Target Samples', target if batched else 'N/A'),
-            ('Overlap Samples', overlap if batched else 'N/A'),
-        ])
+    with torch.no_grad():
+        for i, x in enumerate(inputs, 1):
+            print(f'\n| Generating {i}/{len(inputs)}', file=stderr)
+            _, m, attention = tts_model.generate(x)
+            m = (m + 4) / 8
+            np.clip(m, 0, 1, out=m)
 
-    elif args.vocoder == 'griffinlim':
-        tts_k = tts_model.get_step() // 1000
-        simple_table([
-            ('Tacotron', str(tts_k) + 'k'),
-            ('r', tts_model.r),
-            ('Vocoder Type', 'Griffin-Lim'),
-            ('GL Iters', args.iters),
-        ])
+            if models['save_attn']:
+                save_attention(attention, save_path)
 
-    for i, x in enumerate(inputs, 1):
+            if models['vocoder'] == 'wavernn':
+                m = torch.tensor(m).unsqueeze(0)
+                voc_model.generate(
+                    m, save_path,
+                    models['batched'], models['target'],
+                    models['overlap'], hp.mu_law,
+                )
+            elif models['vocoder'] == 'griffinlim':
+                wav = reconstruct_waveform(m, n_iter=models['iters'])
+                save_wav(wav, save_path)
 
-        print(f'\n| Generating {i}/{len(inputs)}', file=stderr)
-        _, m, attention = tts_model.generate(x)
-        # Fix mel spectrogram scaling to be from 0 to 1
-        m = (m + 4) / 8
-        np.clip(m, 0, 1, out=m)
-
-        if save_attn:
-            save_attention(attention, save_path)
-
-        if args.vocoder == 'wavernn':
-            m = torch.tensor(m).unsqueeze(0)
-            voc_model.generate(m, save_path, batched, target, overlap, hp.mu_law)
-        elif args.vocoder == 'griffinlim':
-            wav = reconstruct_waveform(m, n_iter=args.iters)
-            save_wav(wav, save_path)
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
 
     print('\n\nDone.\n', file=stderr)
+
+
+async def _async_hapsing(request: Request):
+    if request.method == 'POST':
+        await request.form()
+    tshamsoo = _get_tshamsoo(request)
+    async with gpu_semaphore:
+        loop = asyncio.get_event_loop()
+        imtong_sootsai_mp3 = await loop.run_in_executor(
+            executor, _hapsing, tshamsoo
+        )
+    return imtong_sootsai_mp3, tshamsoo
+
+
+@app.api_route("/", methods=['GET', 'POST'])
+@app.api_route("/taiuanue.mp3", methods=['GET', 'POST'])
+@app.api_route("/bangtsam", methods=['GET', 'POST'])
+async def bangtsam_tts(request: Request):
+    imtong_sootsai_mp3, _tshamsoo = await _async_hapsing(request)
+    return FileResponse(
+        imtong_sootsai_mp3,
+        media_type='application/octet-stream',
+        filename='taiuanue.mp3',
+    )
+
+
+@app.api_route("/hapsing", methods=['GET', 'POST'])
+async def line_tts(request: Request):
+    imtong_sootsai_mp3, tshamsoo = await _async_hapsing(request)
+    sikan = get_duration(filename=imtong_sootsai_mp3)
+    return JSONResponse({
+        'bangtsi': 'https://{}/taiuanue.mp3?{}'.format(
+            request.headers.get('host', ''),
+            urlencode(dict(tshamsoo), quote_via=quote),
+        ),
+        'sikan': sikan,
+    })
