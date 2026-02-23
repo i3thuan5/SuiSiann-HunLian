@@ -1,6 +1,7 @@
 FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && \
   apt-get install --no-install-recommends -y git \
     libsndfile1 ffmpeg # librosa output, tsuan mp3
 
