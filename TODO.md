@@ -14,7 +14,7 @@ docker run --rm -v "$(pwd)":/work -w /work \
 
 ### Claude prompt
 
-```
+```text
 幫我用 docker 跑 pip-compile 產生 requirements.txt：
 
 cd fatchord-WaveRNN/hokbu-khuanking

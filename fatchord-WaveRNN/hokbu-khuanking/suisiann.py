@@ -17,7 +17,7 @@ from librosa.core.audio import get_duration
 from models.fatchord_version import WaveRNN
 from models.tacotron import Tacotron
 from utils import hparams as hp
-from utils.display import save_attention, simple_table
+from utils.display import save_attention
 from utils.dsp import reconstruct_waveform, save_wav
 from utils.paths import Paths
 from utils.text import text_to_sequence
