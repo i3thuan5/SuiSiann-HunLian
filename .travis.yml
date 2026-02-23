@@ -47,20 +47,25 @@ jobs:
         - docker-compose up -d
         # Check Nginx format
         - docker-compose run --rm nginx-cache nginx -t
-        - sleep 10
+        # 等hapsing啟動（CPU模式載入模型較慢）
+        - for i in $(seq 1 30); do curl -s http://localhost:8000/ && break || sleep 2; done
+        - docker-compose logs hapsing
+        # 測試合成
         - BANGTSI=http://localhost/bangtsam?taibun=ta%CC%8Dk-ke%20ts%C3%B2-hu%C3%A9%20l%C3%A2i%20tshit-th%C3%B4!
         - time curl -L "$BANGTSI" --output siann.mp3
         - file siann.mp3 | tee siann.type.txt
         - cat siann.type.txt | grep 16
+        # 測試nginx-cache快取
         - time curl -L "$BANGTSI" -I
         - time curl -L "$BANGTSI" -I
         - curl --max-time 1 -L "$BANGTSI" -I
+        # 清除/kiatko/快取，確認nginx-cache仍有快取
         - docker-compose exec hapsing find /kiatko/ -type f -delete
         - curl --max-time 1 -L "$BANGTSI" -I
         - "curl --max-time 1 -L \"$BANGTSI\" -H 'range: bytes=0-' -I"
       after_failure:
         - docker-compose -f ZuGi/docker-compose.yml logs
-        - docker-compose logs
+        - docker-compose logs hapsing
         - cat siann.type.txt
         - cat siann.mp3
     - stage: deploy
