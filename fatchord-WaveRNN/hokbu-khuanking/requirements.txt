@@ -77,7 +77,7 @@ nltk==3.9.2
     # via -r requirements.in
 numba==0.64.0
     # via librosa
-numpy==2.2.6
+numpy==1.26.4
     # via
     #   -r requirements.in
     #   contourpy
