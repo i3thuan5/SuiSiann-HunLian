@@ -226,22 +226,24 @@ def tsau(input_text, save_path):
             ('GL Iters', args.iters),
         ])
 
-    for i, x in enumerate(inputs, 1):
+    with torch.no_grad():
+        for i, x in enumerate(inputs, 1):
 
-        print(f'\n| Generating {i}/{len(inputs)}', file=stderr)
-        _, m, attention = tts_model.generate(x)
-        # Fix mel spectrogram scaling to be from 0 to 1
-        m = (m + 4) / 8
-        np.clip(m, 0, 1, out=m)
+            print(f'\n| Generating {i}/{len(inputs)}', file=stderr)
+            _, m, attention = tts_model.generate(x)
+            # Fix mel spectrogram scaling to be from 0 to 1
+            m = (m + 4) / 8
+            np.clip(m, 0, 1, out=m)
 
-        if save_attn:
-            save_attention(attention, save_path)
+            if save_attn:
+                save_attention(attention, save_path)
 
-        if args.vocoder == 'wavernn':
-            m = torch.tensor(m).unsqueeze(0)
-            voc_model.generate(m, save_path, batched, target, overlap, hp.mu_law)
-        elif args.vocoder == 'griffinlim':
-            wav = reconstruct_waveform(m, n_iter=args.iters)
-            save_wav(wav, save_path)
+            if args.vocoder == 'wavernn':
+                m = torch.tensor(m).unsqueeze(0)
+                voc_model.generate(m, save_path, batched, target, overlap, hp.mu_law)
+            elif args.vocoder == 'griffinlim':
+                wav = reconstruct_waveform(m, n_iter=args.iters)
+                save_wav(wav, save_path)
 
+    torch.cuda.empty_cache()
     print('\n\nDone.\n', file=stderr)

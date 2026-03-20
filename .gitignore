@@ -4,3 +4,5 @@
 .dobi/
 
 venv/
+.claude/
+*.tgz
