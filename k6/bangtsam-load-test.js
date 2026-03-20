@@ -23,7 +23,7 @@ export const options = {
   },
 };
 
-export default function () {
+export default function run() {
   const idx = exec.scenario.iterationInTest % names.length;
   const entry = names[idx];
   const baseUrl = __ENV.BASE_URL || 'http://localhost:8000';
