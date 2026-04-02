@@ -23,7 +23,7 @@ export const options = {
   },
 };
 
-export default function run() {
+export default function tsau() {
   const idx = exec.scenario.iterationInTest % names.length;
   const entry = names[idx];
   const baseUrl = __ENV.BASE_URL || 'http://localhost:8000';
