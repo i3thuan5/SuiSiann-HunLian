@@ -141,14 +141,25 @@ args, voc_model, tts_model, batched, target, overlap, save_attn = thak()
 @app.route("/bangtsam", methods=['POST', 'GET'])
 def bangtsam_tts():
     if request.method == 'POST':
-        _tongan_ti_hethong_toh, bangtsi = hapsing(request.form)
+        _tongan_ti_hethong_toh, bangtsi_mp3, _bangtsi_wav, = hapsing(request.form)
     else:
-        _tongan_ti_hethong_toh, bangtsi = hapsing(request.args)
+        _tongan_ti_hethong_toh, bangtsi_mp3, _bangtsi_wav = hapsing(request.args)
 
     huein = Response()
     huein.headers["Content-Type"] = "application/octet-stream"
     huein.headers["Content-Disposition"] = "attachment; filename=taiuanue.mp3"
-    huein.headers['X-Accel-Redirect'] = bangtsi
+    huein.headers['X-Accel-Redirect'] = bangtsi_mp3
+    return huein
+
+
+@app.route("/taiuanue.wav", methods=['POST', 'GET'])
+def bangtsam_tts_wav():
+    _tongan_ti_hethong_toh, _bangtsi_mp3, bangtsi_wav = hapsing(request.args)
+
+    huein = Response()
+    huein.headers["Content-Type"] = "application/octet-stream"
+    huein.headers["Content-Disposition"] = "attachment; filename=taiuanue.wav"
+    huein.headers['X-Accel-Redirect'] = bangtsi_wav
     return huein
 
 
@@ -158,7 +169,7 @@ def line_tts():
         tshamsoo = request.form
     else:
         tshamsoo = request.args
-    tongan_ti_hethong_toh, _bangtsi = hapsing(tshamsoo)
+    tongan_ti_hethong_toh, _bangtsi_mp3, _bangtsi_wav = hapsing(tshamsoo)
     sikan = get_duration(filename=tongan_ti_hethong_toh)
     return jsonify({
         'bangtsi': 'https://{}/taiuanue.mp3?{}'.format(
@@ -190,10 +201,13 @@ def hapsing(tshamsoo):
             check=True,
         )
 
-    bangtsi = '/kiatko/{}'.format(
+    bangtsi_mp3 = '/kiatko/{}'.format(
         quote(sootsai_mp3),
     )
-    return imtong_sootsai_mp3, bangtsi
+    bangtsi_wav = '/kiatko/{}'.format(
+        quote(sootsai_wav),
+    )
+    return imtong_sootsai_mp3, bangtsi_mp3, bangtsi_wav
 
 
 def tsau(input_text, save_path):
